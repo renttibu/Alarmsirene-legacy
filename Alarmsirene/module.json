@@ -1,0 +1,14 @@
+{
+  "id": "{118660A6-0784-4AD9-81D3-218BD03B1FF5}",
+  "name": "Alarmsirene",
+  "type": 3,
+  "vendor": "NTUB",
+  "aliases": [
+    "Alarmsirene"
+  ],
+  "url": "https://github.com/ubittner/Alarmsirene",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "ASIR"
+}

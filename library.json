@@ -1,0 +1,12 @@
+{
+    "id": "{6984F242-48A3-5594-B0D1-061D71C6B0E5}",
+    "author": "Ulrich Bittner",
+    "name": "Alarmsirene",
+    "url": "https://github.com/ubittner/Alarmsirene",
+    "compatibility": {
+        "version": "5.2"
+    },
+    "version": "4.0",
+    "build": 1,
+    "date": 1579194000
+}
