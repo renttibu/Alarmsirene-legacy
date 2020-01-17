@@ -98,6 +98,7 @@ trait ASIR_alarmSiren
         if (!$State) {
             $this->SendDebug(__FUNCTION__, 'Die Alarmsirenen werden ausgeschaltet.', 0);
             $this->WriteAttributeBoolean('AcousticSignallingActive', false);
+            $this->SendDebug(__FUNCTION__, 'Attribute AcousticSignallingActive: false', 0);
             $this->DisableTimers();
             $this->SetValue('AlarmSiren', false);
             $this->SetValue('AlarmSirenState', 0);
@@ -293,6 +294,7 @@ trait ASIR_alarmSiren
             return;
         }
         $this->WriteAttributeBoolean('AcousticSignallingActive', true);
+        $this->SendDebug(__FUNCTION__, 'Attribute AcousticSignallingActive: true', 0);
         $this->SetTimerInterval('ActivateAcousticSignalling', 0);
         $this->SetValue('AlarmSiren', true);
         $this->SetValue('AlarmSirenState', 1);
@@ -373,6 +375,7 @@ trait ASIR_alarmSiren
             return;
         }
         $this->WriteAttributeBoolean('AcousticSignallingActive', false);
+        $this->SendDebug(__FUNCTION__, 'Attribute AcousticSignallingActive: false', 0);
         $this->SetTimerInterval('DeactivateAcousticSignalling', 0);
         $this->SetValue('AlarmSiren', false);
         $this->SetValue('AlarmSirenState', 0);

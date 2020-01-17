@@ -82,7 +82,7 @@
       "items": [
         {
           "type": "Label",
-          "caption": "Bitte fügen Sie die Variable, das Skript oder die Instanz (HM: Kanal 3, HmIP: Kanal 3) der Alarmsirenen hinzu:"
+          "caption": "Bitte fügen Sie die Alarmsirenen hinzu:"
         },
         {
           "type": "List",
@@ -122,19 +122,19 @@
                     "value": 2
                   },
                   {
-                    "caption": "3 - HM-Sec-Sir-WM",
+                    "caption": "3 - HM-Sec-Sir-WM (Kanal 3)",
                     "value": 3
                   },
                   {
-                    "caption": "4 - HmIP-ASIR-O",
+                    "caption": "4 - HmIP-ASIR-O (Kanal 3)",
                     "value": 4
                   },
                   {
-                    "caption": "5 - HmIP-ASIR",
+                    "caption": "5 - HmIP-ASIR (Kanal 3)",
                     "value": 5
                   },
                   {
-                    "caption": "6 - HmIP-ASIR-2",
+                    "caption": "6 - HmIP-ASIR-2 (Kanal 3)",
                     "value": 6
                   }
                 ]
@@ -144,7 +144,7 @@
               "caption": "ID",
               "name": "ID",
               "width": "400px",
-              "add": 0,
+              "add": -1,
               "edit": {
                 "type": "SelectObject"
               }
@@ -418,7 +418,7 @@
         {
           "type": "NumberSpinner",
           "name": "SignallingDelay",
-          "caption": "Verzögerung",
+          "caption": "Einschaltverzögerung",
           "suffix": "s"
         },
         {
@@ -469,7 +469,7 @@
         {
           "type": "NumberSpinner",
           "name": "MaximumSignallingAmount",
-          "caption": "Maximale Anzahl"
+          "caption": "Maximale Auslösungen"
         }
       ]
     },
