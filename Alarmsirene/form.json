@@ -14,7 +14,7 @@
         },
         {
           "type": "Label",
-          "caption": "Mit dieser Instanz können HomeMatic (HM-Sec-Sir-WM) und Homematic IP (HmIP-ASIR-O, HmIP-ASIR, HmIP-ASIR-2) Alarmsirenen geschaltet werden.\nWeitere Informationen entnehmen Sie bitte der Dokumentation.\n"
+          "caption": "Mit dieser Instanz können Alarmsirenen geschaltet werden.\nWeitere Informationen entnehmen Sie bitte der Dokumentation.\n"
         },
         {
           "type": "Label",
