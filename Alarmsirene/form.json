@@ -507,12 +507,12 @@
       "items": [
         {
           "type": "Button",
-          "caption": "Akustische Signalisierung deaktivieren",
+          "caption": "Akustische Signalisierung AUS",
           "onClick": "ASIR_DeactivateAcousticSignalling($id); echo 'OK';"
         },
         {
           "type": "Button",
-          "caption": "Akustische Signalisierung aktivieren",
+          "caption": "Akustische Signalisierung EIN",
           "onClick": "ASIR_ActivateAcousticSignalling($id); echo 'OK';"
         }
       ]
@@ -523,12 +523,12 @@
       "items": [
         {
           "type": "Button",
-          "caption": "Optische Signalisierung deaktivieren",
+          "caption": "Optische Signalisierung AUS",
           "onClick": "ASIR_DeactivateOpticalSignalling($id); echo 'OK';"
         },
         {
           "type": "Button",
-          "caption": "Optische Signalisierung aktivieren",
+          "caption": "Optische Signalisierung EIN",
           "onClick": "ASIR_DeactivateAcousticSignalling($id); echo 'OK';"
         }
       ]
