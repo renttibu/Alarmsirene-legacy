@@ -1,5 +1,8 @@
 <?php
 
+/** @noinspection DuplicatedCode */
+/** @noinspection PhpUnused */
+
 /*
  * @module      Alarmsirene
  *
@@ -12,11 +15,7 @@
  * @license    	CC BY-NC-SA 4.0
  *              https://creativecommons.org/licenses/by-nc-sa/4.0/
  *
- * @version     4.00-1
- * @date        2020-01-16, 18:00, 1579194000
- * @review      2020-01-17, 08:00, 1579194000
- *
- * @see         https://github.com/ubittner/Alarmsirene/
+ * @see         https://github.com/ubittner/Alarmsirene
  *
  * @guids       Library
  *              {6984F242-48A3-5594-B0D1-061D71C6B0E5}
@@ -25,7 +24,6 @@
  *             	{118660A6-0784-4AD9-81D3-218BD03B1FF5}
  */
 
-// Declare
 declare(strict_types=1);
 
 // Include
@@ -35,64 +33,57 @@ class Alarmsirene extends IPSModule
 {
     // Helper
     use ASIR_alarmSiren;
+    use ASIR_backupRestore;
 
     // Constants
     private const DELAY_MILLISECONDS = 250;
+    private const ALARMSIRENE_LIBRARY_GUID = '{6984F242-48A3-5594-B0D1-061D71C6B0E5}';
+    private const ALARMSIRENE_MODULE_GUID = '{118660A6-0784-4AD9-81D3-218BD03B1FF5}';
 
     public function Create()
     {
         // Never delete this line!
         parent::Create();
-
-        // Register properties
         $this->RegisterProperties();
-
-        // Create profiles
         $this->CreateProfiles();
-
-        // Register variables
         $this->RegisterVariables();
-
-        // Register attributes
         $this->RegisterAttributes();
-
-        // Register timers
         $this->RegisterTimers();
+    }
+
+    public function Destroy()
+    {
+        // Never delete this line!
+        parent::Destroy();
+        $this->DeleteProfiles();
     }
 
     public function ApplyChanges()
     {
         // Wait until IP-Symcon is started
         $this->RegisterMessage(0, IPS_KERNELSTARTED);
-
         // Never delete this line!
         parent::ApplyChanges();
-
         // Check runlevel
         if (IPS_GetKernelRunlevel() != KR_READY) {
             return;
         }
-
-        // Set options
         $this->SetOptions();
-
-        // Reset attributes
         $this->ResetAttributes();
-
-        // Disable timers
         $this->DisableTimers();
-
-        // Reset signalling amount
         $this->SetValue('SignallingAmount', 0);
-
-        // Validate configuration
         $this->ValidateConfiguration();
+        $this->CheckMaintenanceMode();
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
     {
-        // Send debug
-        $this->SendDebug('MessageSink', 'Message from SenderID ' . $SenderID . ' with Message ' . $Message . "\r\n Data: " . print_r($Data, true), 0);
+        $this->SendDebug(__FUNCTION__, $TimeStamp . ', SenderID: ' . $SenderID . ', Message: ' . $Message . ', Data: ' . print_r($Data, true), 0);
+        if (!empty($Data)) {
+            foreach ($Data as $key => $value) {
+                $this->SendDebug(__FUNCTION__, 'Data[' . $key . '] = ' . json_encode($value), 0);
+            }
+        }
         switch ($Message) {
             case IPS_KERNELSTARTED:
                 $this->KernelReady();
@@ -101,21 +92,33 @@ class Alarmsirene extends IPSModule
         }
     }
 
-    protected function KernelReady()
+    public function GetConfigurationForm()
     {
-        $this->ApplyChanges();
+        $formData = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $moduleInfo = [];
+        $library = IPS_GetLibrary(self::ALARMSIRENE_LIBRARY_GUID);
+        $module = IPS_GetModule(self::ALARMSIRENE_MODULE_GUID);
+        $moduleInfo['name'] = $module['ModuleName'];
+        $moduleInfo['version'] = $library['Version'] . '-' . $library['Build'];
+        $moduleInfo['date'] = date('d.m.Y', $library['Date']);
+        $moduleInfo['time'] = date('H:i', $library['Date']);
+        $moduleInfo['developer'] = $library['Author'];
+        $formData['elements'][0]['items'][2]['caption'] = "Instanz ID:\t\t" . $this->InstanceID;
+        $formData['elements'][0]['items'][3]['caption'] = "Modul:\t\t\t" . $moduleInfo['name'];
+        $formData['elements'][0]['items'][4]['caption'] = "Version:\t\t\t" . $moduleInfo['version'];
+        $formData['elements'][0]['items'][5]['caption'] = "Datum:\t\t\t" . $moduleInfo['date'];
+        $formData['elements'][0]['items'][6]['caption'] = "Uhrzeit:\t\t\t" . $moduleInfo['time'];
+        $formData['elements'][0]['items'][7]['caption'] = "Entwickler:\t\t" . $moduleInfo['developer'];
+        $formData['elements'][0]['items'][8]['caption'] = "Präfix:\t\t\tASIR";
+        return json_encode($formData);
     }
 
-    public function Destroy()
+    public function ReloadConfiguration()
     {
-        // Never delete this line!
-        parent::Destroy();
-
-        // Delete profiles
-        $this->DeleteProfiles();
+        $this->ReloadForm();
     }
 
-    //#################### Request Action
+    #################### Request Action
 
     public function RequestAction($Ident, $Value)
     {
@@ -131,36 +134,37 @@ class Alarmsirene extends IPSModule
         }
     }
 
-    //#################### Private
+    #################### Private
+
+    private function KernelReady()
+    {
+        $this->ApplyChanges();
+    }
 
     private function RegisterProperties(): void
     {
+        $this->RegisterPropertyString('Note', '');
+        $this->RegisterPropertyBoolean('MaintenanceMode', false);
         // Visibility
         $this->RegisterPropertyBoolean('EnableAlarmSiren', true);
         $this->RegisterPropertyBoolean('EnableAlarmSirenState', true);
         $this->RegisterPropertyBoolean('EnableSignallingAmount', true);
         $this->RegisterPropertyBoolean('EnableResetSignallingAmount', true);
-
         // Alarm siren
         $this->RegisterPropertyString('AlarmSirens', '[]');
-
         // Signaling variants
         $this->RegisterPropertyInteger('AcousticSignalPreAlarm', 10);
         $this->RegisterPropertyInteger('OpticalSignalPreAlarm', 3);
         $this->RegisterPropertyInteger('AcousticSignalMainAlarm', 3);
         $this->RegisterPropertyInteger('OpticalSignalMainAlarm', 3);
-
         // Signalling delay
         $this->RegisterPropertyInteger('SignallingDelay', 0);
         $this->RegisterPropertyBoolean('UsePreAlarm', false);
-
         // Signalling duration
         $this->RegisterPropertyInteger('AcousticSignallingDuration', 180);
         $this->RegisterPropertyInteger('OpticalSignallingDuration', 5);
-
         // Signalling limit
         $this->RegisterPropertyInteger('MaximumSignallingAmount', 3);
-
         // Alarm protocol
         $this->RegisterPropertyInteger('AlarmProtocol', 0);
     }
@@ -176,7 +180,6 @@ class Alarmsirene extends IPSModule
         IPS_SetVariableProfileAssociation($profile, 0, 'Aus', 'Information', -1);
         IPS_SetVariableProfileAssociation($profile, 1, 'An', 'Warning', 0xFF0000);
         IPS_SetVariableProfileAssociation($profile, 2, 'Verzögert', 'Clock', 0xFFFF00);
-
         // Reset signalling amount
         $profile = 'ASIR.' . $this->InstanceID . '.ResetSignallingAmount';
         if (!IPS_VariableProfileExists($profile)) {
@@ -202,24 +205,21 @@ class Alarmsirene extends IPSModule
     private function RegisterVariables(): void
     {
         // Alarm siren
-        $this->RegisterVariableBoolean('AlarmSiren', 'Alarmsirene', '~Switch', 1);
+        $this->RegisterVariableBoolean('AlarmSiren', 'Alarmsirene', '~Switch', 10);
         $this->EnableAction('AlarmSiren');
         $id = $this->GetIDForIdent('AlarmSiren');
         IPS_SetIcon($id, 'Alert');
-
         // Alarm siren state
         $profile = 'ASIR.' . $this->InstanceID . '.AlarmSirenState';
-        $this->RegisterVariableInteger('AlarmSirenState', 'Status', $profile, 2);
-
+        $this->RegisterVariableInteger('AlarmSirenState', 'Status', $profile, 20);
         // Signalling amount
-        $this->RegisterVariableInteger('SignallingAmount', 'Anzahl der Auslösungen', '', 3);
+        $this->RegisterVariableInteger('SignallingAmount', 'Anzahl der Auslösungen', '', 30);
         $this->SetValue('SignallingAmount', 0);
         $id = $this->GetIDForIdent('SignallingAmount');
         IPS_SetIcon($id, 'Warning');
-
         // Reset signalling amount
         $profile = 'ASIR.' . $this->InstanceID . '.ResetSignallingAmount';
-        $this->RegisterVariableBoolean('ResetSignallingAmount', 'Rückstellung der Auslösungen', $profile, 4);
+        $this->RegisterVariableBoolean('ResetSignallingAmount', 'Rückstellung der Auslösungen', $profile, 40);
         $this->EnableAction('ResetSignallingAmount');
     }
 
@@ -229,17 +229,14 @@ class Alarmsirene extends IPSModule
         $id = $this->GetIDForIdent('AlarmSiren');
         $use = $this->ReadPropertyBoolean('EnableAlarmSiren');
         IPS_SetHidden($id, !$use);
-
         // Alarm siren state
         $id = $this->GetIDForIdent('AlarmSirenState');
         $use = $this->ReadPropertyBoolean('EnableAlarmSirenState');
         IPS_SetHidden($id, !$use);
-
         // Signalling amount
         $id = $this->GetIDForIdent('SignallingAmount');
         $use = $this->ReadPropertyBoolean('EnableSignallingAmount');
         IPS_SetHidden($id, !$use);
-
         // Reset signalling amount
         $id = $this->GetIDForIdent('ResetSignallingAmount');
         $use = $this->ReadPropertyBoolean('EnableResetSignallingAmount');
@@ -281,5 +278,20 @@ class Alarmsirene extends IPSModule
             $this->LogMessage('Die Dauer der optischen Signalisierung ist zu gering!', KL_ERROR);
         }
         $this->SetStatus($status);
+    }
+
+    private function CheckMaintenanceMode(): bool
+    {
+        $result = false;
+        $status = 102;
+        if ($this->ReadPropertyBoolean('MaintenanceMode')) {
+            $result = true;
+            $status = 104;
+            $this->SendDebug(__FUNCTION__, 'Abbruch, der Wartungsmodus ist aktiv!', 0);
+            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', Abbruch, der Wartungsmodus ist aktiv!', KL_WARNING);
+        }
+        $this->SetStatus($status);
+        IPS_SetDisabled($this->InstanceID, $result);
+        return $result;
     }
 }

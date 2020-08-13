@@ -1,6 +1,9 @@
 <?php
 
-// Declare
+/** @noinspection DuplicatedCode */
+/** @noinspection PhpUnused */
+/** @noinspection PhpUndefinedFunctionInspection */
+
 declare(strict_types=1);
 
 trait ASIR_alarmSiren
@@ -84,9 +87,14 @@ trait ASIR_alarmSiren
      * @param bool $State
      * false    = turn alarm siren off
      * true     = turn alarm siren on
+     * @throws Exception
+     * @throws Exception
      */
     public function ToggleAlarmSiren(bool $State): void
     {
+        if ($this->CheckMaintenanceMode()) {
+            return;
+        }
         $this->SendDebug(__FUNCTION__, 'Die Methode wurde mit Parameter ' . json_encode($State) . ' aufgerufen.', 0);
         // Check alarm sirens
         if (!$this->CheckExecution()) {
@@ -228,6 +236,9 @@ trait ASIR_alarmSiren
      */
     public function TriggerPreAlarm(): void
     {
+        if ($this->CheckMaintenanceMode()) {
+            return;
+        }
         $this->SendDebug(__FUNCTION__, 'Die Methode wurde aufgerufen.', 0);
         // Check alarm sirens
         if (!$this->CheckExecution()) {
@@ -280,6 +291,9 @@ trait ASIR_alarmSiren
      */
     public function ActivateAcousticSignalling(): void
     {
+        if ($this->CheckMaintenanceMode()) {
+            return;
+        }
         $this->SendDebug(__FUNCTION__, 'Die Methode wurde aufgerufen.', 0);
         // Check alarm sirens
         if (!$this->CheckExecution()) {
@@ -637,6 +651,9 @@ trait ASIR_alarmSiren
      */
     private function UpdateProtocol(string $Message): void
     {
+        if ($this->CheckMaintenanceMode()) {
+            return;
+        }
         $protocolID = $this->ReadPropertyInteger('AlarmProtocol');
         if ($protocolID != 0 && @IPS_ObjectExists($protocolID)) {
             $timestamp = date('d.m.Y, H:i:s');
