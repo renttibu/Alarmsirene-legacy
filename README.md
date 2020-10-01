@@ -9,8 +9,8 @@
 
 Folgende Module beinhaltet das Alarmsirene Repository:  
 
-- __Alarmsirene__ ([Dokumentation](Alarmsirene))
+- __Alarmsirene__ ([Dokumentation](Alarmsirene))  
     Dieses Modul steuert Alarmsirenen.  
 
-- __Alarmsirene 2__ ([Dokumentation](Alarmsirene%202))
+- __Alarmsirene 2__ ([Dokumentation](Alarmsirene%202))  
     Dieses Modul steuert eine HmIP-ASIR, HmIP-ASIR-O oder HmIP-ASIR-2 Alarmsirene.
