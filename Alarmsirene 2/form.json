@@ -1,0 +1,447 @@
+{
+  "elements": [
+    {
+      "type": "ExpansionPanel",
+      "caption": "Info",
+      "items": [
+        {
+          "type": "Label",
+          "caption": "Mit dieser Instanz kann eine Alarmsirene (HmIP-ASIR, HmIP-ASIR-O, HmIP-ASIR-2) gesteuert werden.\nWeitere Informationen entnehmen Sie bitte der Dokumentation."
+        },
+        {
+          "type": "Label",
+          "caption": "ID:"
+        },
+        {
+          "type": "Label",
+          "caption": "Modul:"
+        },
+        {
+          "type": "Label",
+          "caption": "Version:"
+        },
+        {
+          "type": "Label",
+          "caption": "Datum:"
+        },
+        {
+          "type": "Label",
+          "caption": "Uhrzeit:"
+        },
+        {
+          "type": "Label",
+          "caption": "Entwickler:"
+        },
+        {
+          "type": "Label",
+          "caption": "Präfix:"
+        },
+        {
+          "type": "ValidationTextBox",
+          "name": "Note",
+          "caption": "Notiz",
+          "width": "600px"
+        },
+        {
+          "type": "Label",
+          "caption": " "
+        },
+        {
+          "type": "CheckBox",
+          "name": "MaintenanceMode",
+          "caption": "Wartungsmodus"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Funktionen",
+      "items": [
+        {
+          "type": "Label",
+          "caption": "Bitte wählen Sie die zu steuernden Funktionen aus"
+        },
+        {
+          "type": "CheckBox",
+          "name": "EnableAlarmSiren",
+          "caption": "Alarmsirene (Aus/An)"
+        },
+        {
+          "type": "CheckBox",
+          "name": "EnableAcousticSignal",
+          "caption": "Akustisches Signal (Auswahl)"
+        },
+        {
+          "type": "CheckBox",
+          "name": "EnableOpticalSignal",
+          "caption": "Optisches Signal (Auswahl)"
+        },
+        {
+          "type": "CheckBox",
+          "name": "EnableSignallingAmount",
+          "caption": "Auslösungen (Info)"
+        },
+        {
+          "type": "CheckBox",
+          "name": "EnableResetSignallingAmount",
+          "caption": "Rückstellung (Reset)"
+        },
+        {
+          "type": "CheckBox",
+          "name": "EnableMuteMode",
+          "caption": "Stummschaltung (Aus/An)"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Alarmsirene",
+      "items": [
+        {
+          "type": "Label",
+          "caption": "Bitte wählen Sie die Instanz für die Alarmsirene (Kanal 3) aus"
+        },
+        {
+          "type": "SelectInstance",
+          "name": "AlarmSiren",
+          "caption": "Alarmsirene",
+          "width": "600px"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Schaltverzögerung an"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "AlarmSirenSwitchingDelay",
+          "caption": "Schaltverzögerung",
+          "minimum": 0,
+          "suffix": "Millisekunden"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Voralarm",
+      "items": [
+        {
+          "type": "CheckBox",
+          "name": "UsePreAlarm",
+          "caption": "Voralarm"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Hauptalarm",
+      "items": [
+        {
+          "type": "CheckBox",
+          "name": "UseMainAlarm",
+          "caption": "Hauptalarm"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Einschaltverzögerung an"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmSignallingDelay",
+          "caption": "Einschaltverzögerung",
+          "minimum": 0,
+          "suffix": "Sekunden"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Dauer für die akustische Signalisierung an"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmAcousticSignallingDuration",
+          "caption": "Akustische Signalisierung",
+          "minimum": 0,
+          "maximum": 180,
+          "suffix": "Sekunden"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Dauer für die optische Signalisierung an"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmOpticalSignallingDuration",
+          "caption": "Optische Signalisierung",
+          "minimum": 0,
+          "suffix": "Minuten"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die maximale Anzahl der Auslösungen bis zur Rückstellung an"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmMaximumSignallingAmount",
+          "caption": "Maximale Auslösungen",
+          "minimum": 0
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Auslöser",
+      "items": [
+        {
+          "type": "Label",
+          "caption": "Bitte fügen Sie die auslösenden Variablen hinzu"
+        },
+        {
+          "type": "List",
+          "name": "TriggerVariables",
+          "caption": "Variablen",
+          "rowCount": 10,
+          "add": true,
+          "delete": true,
+          "sort": {
+            "column": "ID",
+            "direction": "ascending"
+          },
+          "columns": [
+            {
+              "caption": "Aktiviert",
+              "name": "Use",
+              "width": "100px",
+              "add": true,
+              "edit": {
+                "type": "CheckBox"
+              }
+            },
+            {
+              "caption": "Variable",
+              "name": "ID",
+              "width": "600px",
+              "add": 0,
+              "onClick": "echo 'ID: ' . $TriggerVariables['ID'];",
+              "edit": {
+                "type": "SelectVariable"
+              }
+            },
+            {
+              "caption": "Auslösender Wert",
+              "name": "TriggerValue",
+              "width": "160px",
+              "add": 0,
+              "edit": {
+                "type": "Select",
+                "options": [
+                  {
+                    "caption": "0 | false",
+                    "value": 0
+                  },
+                  {
+                    "caption": "1 | true",
+                    "value": 1
+                  },
+                  {
+                    "caption": "2",
+                    "value": 2
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Alarmprotokoll",
+      "items": [
+        {
+          "type": "Label",
+          "caption": "Bitte wählen Sie die Instanz für das Alarmprotokoll aus"
+        },
+        {
+          "type": "SelectInstance",
+          "name": "AlarmProtocol",
+          "caption": "Alarmprotokoll",
+          "width": "600px"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Stummschaltung",
+      "items": [
+        {
+          "type": "CheckBox",
+          "name": "UseAutomaticMuteMode",
+          "caption": "Automatische Stummschaltung"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Startzeit für die Stummschaltung an"
+        },
+        {
+          "type": "SelectTime",
+          "name": "MuteModeStartTime",
+          "caption": "Startzeit"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Endzeit für die Stummschaltung an"
+        },
+        {
+          "type": "SelectTime",
+          "name": "MuteModeEndTime",
+          "caption": "Endzeit"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "ExpansionPanel",
+      "caption": "Konfiguration",
+      "items": [
+        {
+          "type": "Button",
+          "caption": "Neu einlesen",
+          "onClick": "AS2_ReloadConfiguration($id);"
+        },
+        {
+          "type": "RowLayout",
+          "items": [
+            {
+              "type": "SelectCategory",
+              "name": "BackupCategory",
+              "caption": "Kategorie",
+              "width": "600px"
+            },
+            {
+              "type": "Label",
+              "caption": " "
+            },
+            {
+              "type": "Button",
+              "caption": "Sichern",
+              "onClick": "AS2_CreateBackup($id, $BackupCategory);"
+            }
+          ]
+        },
+        {
+          "type": "RowLayout",
+          "items": [
+            {
+              "type": "SelectScript",
+              "name": "ConfigurationScript",
+              "caption": "Konfiguration",
+              "width": "600px"
+            },
+            {
+              "type": "Label",
+              "caption": " "
+            },
+            {
+              "type": "PopupButton",
+              "caption": "Wiederherstellen",
+              "popup": {
+                "caption": "Konfiguration wirklich wiederherstellen?",
+                "items": [
+                  {
+                    "type": "Button",
+                    "caption": "Wiederherstellen",
+                    "onClick": "AS2_RestoreConfiguration($id, $ConfigurationScript);"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Registrierte Nachrichten",
+      "items": [
+        {
+          "type": "List",
+          "name": "RegisteredMessages",
+          "rowCount": 11,
+          "sort": {
+            "column": "SenderID",
+            "direction": "ascending"
+          },
+          "columns": [
+            {
+              "caption": "Sender ID",
+              "name": "SenderID",
+              "width": "150px"
+            },
+            {
+              "caption": "Sender Name",
+              "name": "SenderName",
+              "width": "250px"
+            },
+            {
+              "caption": "Nachrichten ID",
+              "name": "MessageID",
+              "width": "150px"
+            },
+            {
+              "caption": "Nachrichten Bezeichnung",
+              "name": "MessageDescription",
+              "width": "260px"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Attribute",
+      "items": [
+        {
+          "type": "Label",
+          "caption": "Hauptalarm:",
+          "name": "AttributeMainAlarm"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Testbereich",
+      "items": [
+        {
+          "type": "TestCenter"
+        }
+      ]
+    }
+  ],
+  "status": [
+    {
+      "code": 101,
+      "icon": "active",
+      "caption": "Alarmsirene wird erstellt"
+    },
+    {
+      "code": 102,
+      "icon": "active",
+      "caption": "Alarmsirene ist aktiv"
+    },
+    {
+      "code": 103,
+      "icon": "active",
+      "caption": "Alarmsirene wird gelöscht"
+    },
+    {
+      "code": 104,
+      "icon": "inactive",
+      "caption": "Alarmsirene ist inaktiv"
+    },
+    {
+      "code": 200,
+      "icon": "inactive",
+      "caption": "Es ist Fehler aufgetreten, weitere Informationen unter Meldungen, im Log oder Debug!"
+    }
+  ]
+}

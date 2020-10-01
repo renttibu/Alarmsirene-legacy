@@ -1,0 +1,14 @@
+{
+  "id": "{3836A9EA-7DE0-508E-79CF-17D04C593D45}",
+  "name": "Alarmsirene 2",
+  "type": 3,
+  "vendor": "Ulrich Bittner",
+  "aliases": [
+    "Alarmsirene 2 (HmIP-ASIR, HmIP-ASIR-O, HmIP-ASIR-2)"
+  ],
+  "url": "https://github.com/ubittner/Alarmsirene",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "AS2"
+}
