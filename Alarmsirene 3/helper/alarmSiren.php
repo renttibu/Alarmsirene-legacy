@@ -6,56 +6,27 @@
 
 declare(strict_types=1);
 
-trait AS2_alarmSiren
+trait AS3_alarmSiren
 {
-    #################### HmIP-ASIR, HmIP-ASIR-O, HmIP-ASIR-2
+    #################### HM-Sec-Sir-WM
 
     /**
      *
-     * CHANNEL  = 3, ALARM_SWITCH_VIRTUAL_RECEIVER
+     * CHANNEL  = 3, SWITCH_PANIC
      *
-     * ACOUSTIC_ALARM_SELECTION:
+     * STATE:
      *
-     * 0        = DISABLE_ACOUSTIC_SIGNAL
-     * 1        = FREQUENCY_RISING
-     * 2        = FREQUENCY_FALLING
-     * 3        = FREQUENCY_RISING_AND_FALLING
-     * 4        = FREQUENCY_ALTERNATING_LOW_HIGH
-     * 5        = FREQUENCY_ALTERNATING_LOW_MID_HIGH
-     * 6        = FREQUENCY_HIGHON_OFF
-     * 7        = FREQUENCY_HIGHON_LONGOFF
-     * 8        = FREQUENCY_LOWON_OFF_HIGHON_OFF
-     * 9        = FREQUENCY_LOWON_LONGOFF_HIGHON_LONGOFF
-     * 10       = LOW_BATTERY
-     * 11       = DISARMED
-     * 12       = INTERNALLY_ARMED
-     * 13       = EXTERNALLY_ARMED
-     * 14       = DELAYED_INTERNALLY_ARMED
-     * 15       = DELAYED_EXTERNALLY_ARMED
-     * 16       = EVENT
-     * 17       = ERROR
+     * false    = TURN_OFF
+     * true     = TURN_ON
      *
-     * OPTICAL_ALARM_SELECTION:
+     * CHANNEL  = 4, ARMING
      *
-     * 0        = DISABLE_OPTICAL_SIGNAL
-     * 1        = BLINKING_ALTERNATELY_REPEATING
-     * 2        = BLINKING_BOTH_REPEATING
-     * 3        = DOUBLE_FLASHING_REPEATING
-     * 4        = FLASHING_BOTH_REPEATING
-     * 5        = CONFIRMATION_SIGNAL_0 LONG_LONG
-     * 6        = CONFIRMATION_SIGNAL_1 LONG_SHORT
-     * 7        = CONFIRMATION_SIGNAL_2 LONG_SHORT_SHORT
+     * ARMSTATE:
      *
-     * DURATION_UNIT:
-     *
-     * 0        = SECONDS
-     * 1        = MINUTES
-     * 2        = HOURS
-     *
-     * DURATION_VALUE:
-     *
-     * n        = VALUE
-     *
+     * 0        = DISARMED
+     * 1        = EXTSENS_ARMED
+     * 2        = ALLSENS_ARMED
+     * 3        = ALARM_BLOCKED
      */
 
     /**
@@ -98,18 +69,12 @@ trait AS2_alarmSiren
             if (!IPS_SemaphoreEnter($this->InstanceID . '.ToggleAlarmSiren', 5000)) {
                 return $result;
             }
-            $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-            $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
             $result = true;
-            if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
+            $response = @HM_WriteValueBoolean($id, 'STATE', false);
+            if (!$response) {
                 IPS_Sleep(self::DELAY_MILLISECONDS);
-                $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-                $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
-                $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-                $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
-                if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
+                $response = @HM_WriteValueBoolean($id, 'STATE', false);
+                if (!$response) {
                     $result = false;
                     //Revert
                     $this->SetValue('AlarmSiren', $actualAlarmSirenState);
@@ -119,13 +84,13 @@ trait AS2_alarmSiren
                     $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
                 }
             }
+            //Semaphore leave
+            IPS_SemaphoreLeave($this->InstanceID . '.ToggleAlarmSiren');
             if ($result) {
                 //Protocol
                 $text = 'Die Alarmsirene wurde ausgeschaltet. (ID ' . $id . ')';
                 $this->UpdateProtocol($text);
             }
-            //Semaphore leave
-            IPS_SemaphoreLeave($this->InstanceID . '.ToggleAlarmSiren');
         }
         //Activate
         if ($State) {
@@ -242,32 +207,28 @@ trait AS2_alarmSiren
         if (!$this->CheckAlarmSiren()) {
             return $result;
         }
-        IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
-        //Semaphore Enter
-        if (!IPS_SemaphoreEnter($this->InstanceID . '.PreAlarm', 5000)) {
-            return $result;
-        }
-        $result = true;
-        $id = $this->ReadPropertyInteger('AlarmSiren');
-        $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-        $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
-        $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 10);
-        $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 3);
-        if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
-            IPS_Sleep(self::DELAY_MILLISECONDS);
-            $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-            $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 10);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 3);
-            if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
-                $result = false;
-                $message = 'Fehler, der Voralarm konnte nicht ausgegeben werden!';
-                $this->SendDebug(__FUNCTION__, $message, 0);
-                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
+        $id = $this->ReadPropertyInteger('PreAlarmSiren');
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
+            //Semaphore Enter
+            if (!IPS_SemaphoreEnter($this->InstanceID . '.PreAlarm', 5000)) {
+                return $result;
             }
+            $result = true;
+            $response = @HM_WriteValueInteger($id, 'ARMSTATE', 2);
+            if (!$response) {
+                IPS_Sleep(self::DELAY_MILLISECONDS);
+                $response = @HM_WriteValueInteger($id, 'ARMSTATE', 2);
+                if (!$response) {
+                    $result = false;
+                    $message = 'Fehler, der Voralarm konnte nicht ausgegeben werden!';
+                    $this->SendDebug(__FUNCTION__, $message, 0);
+                    $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
+                }
+            }
+            //Semaphore leave
+            IPS_SemaphoreLeave($this->InstanceID . '.PreAlarm');
         }
-        //Semaphore leave
-        IPS_SemaphoreLeave($this->InstanceID . '.PreAlarm');
         if ($result) {
             $this->SendDebug(__FUNCTION__, 'Der Voralarm wurde erfolgreich ausgegeben.', 0);
         }
@@ -312,8 +273,6 @@ trait AS2_alarmSiren
         $this->SetTimerInterval('ActivateMainAlarm', 0);
         $this->SetValue('AlarmSiren', true);
         $this->SetValue('SignallingAmount', $this->GetValue('SignallingAmount') + 1);
-        $acousticSignal = $this->GetValue('AcousticSignal');
-        $opticalSignal = $this->GetValue('OpticalSignal');
         $duration = $this->ReadPropertyInteger('MainAlarmAcousticSignallingDuration');
         IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
         //Semaphore Enter
@@ -322,17 +281,11 @@ trait AS2_alarmSiren
         }
         $result = true;
         $id = $this->ReadPropertyInteger('AlarmSiren');
-        $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-        $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-        $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
-        $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
-        if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
+        $response = @HM_WriteValueBoolean($id, 'STATE', true);
+        if (!$response) {
             IPS_Sleep(self::DELAY_MILLISECONDS);
-            $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-            $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
-            if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
+            $response = @HM_WriteValueBoolean($id, 'STATE', true);
+            if (!$response) {
                 $result = false;
                 $message = 'Fehler, der Hauptalarm konnte nicht ausgegeben werden!';
                 $this->SendDebug(__FUNCTION__, $message, 0);
@@ -347,72 +300,7 @@ trait AS2_alarmSiren
             $text = 'Die Alarmsirene wurde eingeschaltet. (ID ' . $id . ')';
             $this->UpdateProtocol($text);
         }
-        $this->SetTimerInterval('DeactivateAcousticSignal', $duration * 1000);
-        return $result;
-    }
-
-    /**
-     * Deactivates the acoustic signal.
-     *
-     * @return bool
-     * false    = an error occurred
-     * true     = successful
-     *
-     * @throws Exception
-     */
-    public function DeactivateAcousticSignal(): bool
-    {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        $result = false;
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return $result;
-        }
-        //Check alarm siren
-        if (!$this->CheckAlarmSiren()) {
-            return $result;
-        }
-        $this->SetTimerInterval('DeactivateAcousticSignal', 0);
-        $acousticDuration = $this->ReadPropertyInteger('MainAlarmAcousticSignallingDuration');
-        $opticalDuration = $this->ReadPropertyInteger('MainAlarmOpticalSignallingDuration') * 60;
-        if ($opticalDuration == $acousticDuration) {
-            $result = $this->ToggleAlarmSiren(false);
-        }
-        if ($opticalDuration > $acousticDuration) {
-            $opticalSignal = $this->GetValue('OpticalSignal');
-            $duration = ($opticalDuration - $acousticDuration);
-            IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
-            //Semaphore Enter
-            if (!IPS_SemaphoreEnter($this->InstanceID . '.DeactivateAcousticSignal', 5000)) {
-                return $result;
-            }
-            $result = true;
-            $id = $this->ReadPropertyInteger('AlarmSiren');
-            $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-            $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
-            if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
-                IPS_Sleep(self::DELAY_MILLISECONDS);
-                $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
-                $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-                $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-                $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
-                if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
-                    $result = false;
-                    $message = 'Fehler, das akustische Signal konnte nicht deaktiviert werden!';
-                    $this->SendDebug(__FUNCTION__, $message, 0);
-                    $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
-                }
-            }
-            //Semaphore leave
-            IPS_SemaphoreLeave($this->InstanceID . '.DeactivateAcousticSignal');
-            if ($result) {
-                $this->SendDebug(__FUNCTION__, 'Das akustische Signal wurde erfolgreich deaktiviert.', 0);
-                $this->SendDebug(__FUNCTION__, 'Das optische Signal wurde erfolgreich aktiviert.', 0);
-            }
-            $this->SetTimerInterval('DeactivateMainAlarm', $duration * 1000);
-        }
+        $this->SetTimerInterval('DeactivateMainAlarm', $duration * 1000);
         return $result;
     }
 

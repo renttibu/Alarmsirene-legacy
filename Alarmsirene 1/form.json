@@ -20,16 +20,6 @@
         },
         {
           "type": "CheckBox",
-          "name": "EnableAcousticSignal",
-          "caption": "Akustisches Signal (Auswahl)"
-        },
-        {
-          "type": "CheckBox",
-          "name": "EnableOpticalSignal",
-          "caption": "Optisches Signal (Auswahl)"
-        },
-        {
-          "type": "CheckBox",
           "name": "EnableSignallingAmount",
           "caption": "Auslösungen (Info)"
         },
@@ -51,10 +41,10 @@
       "items": [
         {
           "type": "Label",
-          "caption": "Bitte wählen Sie die Instanz für die Alarmsirene (Kanal 3) aus"
+          "caption": "Bitte wählen Sie die Variable für die Alarmsirene aus"
         },
         {
-          "type": "SelectInstance",
+          "type": "SelectVariable",
           "name": "AlarmSiren",
           "caption": "Alarmsirene",
           "width": "600px"
@@ -80,6 +70,18 @@
           "type": "CheckBox",
           "name": "UsePreAlarm",
           "caption": "Voralarm"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte geben Sie die Dauer für den Voralarm an"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "PreAlarmDuration",
+          "caption": "Dauer",
+          "minimum": 1,
+          "maximum": 60,
+          "suffix": "Sekunden"
         }
       ]
     },
@@ -105,26 +107,15 @@
         },
         {
           "type": "Label",
-          "caption": "\nBitte geben Sie die Dauer für die akustische Signalisierung an"
+          "caption": "\nBitte geben Sie die Dauer für den Hauptalarm an"
         },
         {
           "type": "NumberSpinner",
           "name": "MainAlarmAcousticSignallingDuration",
-          "caption": "Akustische Signalisierung",
+          "caption": "Dauer",
           "minimum": 0,
           "maximum": 180,
           "suffix": "Sekunden"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Dauer für die optische Signalisierung an"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmOpticalSignallingDuration",
-          "caption": "Optische Signalisierung",
-          "minimum": 0,
-          "suffix": "Minuten"
         },
         {
           "type": "Label",
@@ -284,7 +275,7 @@
         {
           "type": "Button",
           "caption": "Neu einlesen",
-          "onClick": "AS2_ReloadConfiguration($id);"
+          "onClick": "AS1_ReloadConfiguration($id);"
         },
         {
           "type": "RowLayout",
@@ -302,7 +293,7 @@
             {
               "type": "Button",
               "caption": "Sichern",
-              "onClick": "AS2_CreateBackup($id, $BackupCategory);"
+              "onClick": "AS1_CreateBackup($id, $BackupCategory);"
             }
           ]
         },
@@ -328,7 +319,7 @@
                   {
                     "type": "Button",
                     "caption": "Wiederherstellen",
-                    "onClick": "AS2_RestoreConfiguration($id, $ConfigurationScript);"
+                    "onClick": "AS1_RestoreConfiguration($id, $ConfigurationScript);"
                   }
                 ]
               }

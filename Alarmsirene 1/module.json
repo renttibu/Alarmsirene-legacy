@@ -1,0 +1,14 @@
+{
+  "id": "{856F7F9E-CA7F-823D-340F-A041937831E3}",
+  "name": "Alarmsirene 1",
+  "type": 3,
+  "vendor": "Ulrich Bittner",
+  "aliases": [
+    "Alarmsirene 1 (Variable)"
+  ],
+  "url": "https://github.com/ubittner/Alarmsirene",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "AS1"
+}

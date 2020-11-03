@@ -6,7 +6,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">../Alarmsirene</directory>
+            <directory suffix=".php">../Alarmsirene 1</directory>
             <directory suffix=".php">../Alarmsirene 2</directory>
+            <directory suffix=".php">../Alarmsirene 3</directory>
         </whitelist>
     </filter>
 </phpunit>

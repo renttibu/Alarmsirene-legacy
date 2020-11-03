@@ -5,7 +5,7 @@
 
 declare(strict_types=1);
 
-trait AS2_muteMode
+trait AS1_muteMode
 {
     /**
      * Toggles the mute mode off or on.

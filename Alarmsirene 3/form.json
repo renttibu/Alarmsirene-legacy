@@ -20,16 +20,6 @@
         },
         {
           "type": "CheckBox",
-          "name": "EnableAcousticSignal",
-          "caption": "Akustisches Signal (Auswahl)"
-        },
-        {
-          "type": "CheckBox",
-          "name": "EnableOpticalSignal",
-          "caption": "Optisches Signal (Auswahl)"
-        },
-        {
-          "type": "CheckBox",
           "name": "EnableSignallingAmount",
           "caption": "Auslösungen (Info)"
         },
@@ -80,6 +70,16 @@
           "type": "CheckBox",
           "name": "UsePreAlarm",
           "caption": "Voralarm"
+        },
+        {
+          "type": "Label",
+          "caption": "\nBitte wählen Sie die Instanz für die Alarmsirene (Kanal 4) aus"
+        },
+        {
+          "type": "SelectInstance",
+          "name": "PreAlarmSiren",
+          "caption": "Alarmsirene",
+          "width": "600px"
         }
       ]
     },
@@ -114,17 +114,6 @@
           "minimum": 0,
           "maximum": 180,
           "suffix": "Sekunden"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Dauer für die optische Signalisierung an"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmOpticalSignallingDuration",
-          "caption": "Optische Signalisierung",
-          "minimum": 0,
-          "suffix": "Minuten"
         },
         {
           "type": "Label",
@@ -284,7 +273,7 @@
         {
           "type": "Button",
           "caption": "Neu einlesen",
-          "onClick": "AS2_ReloadConfiguration($id);"
+          "onClick": "AS3_ReloadConfiguration($id);"
         },
         {
           "type": "RowLayout",
@@ -302,7 +291,7 @@
             {
               "type": "Button",
               "caption": "Sichern",
-              "onClick": "AS2_CreateBackup($id, $BackupCategory);"
+              "onClick": "AS3_CreateBackup($id, $BackupCategory);"
             }
           ]
         },
@@ -328,7 +317,7 @@
                   {
                     "type": "Button",
                     "caption": "Wiederherstellen",
-                    "onClick": "AS2_RestoreConfiguration($id, $ConfigurationScript);"
+                    "onClick": "AS3_RestoreConfiguration($id, $ConfigurationScript);"
                   }
                 ]
               }

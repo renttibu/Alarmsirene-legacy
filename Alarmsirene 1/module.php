@@ -4,9 +4,9 @@
 /** @noinspection PhpUnused */
 
 /*
- * @module      Alarmsirene 2 (HmIP-ASIR, HmIP-ASIR-O, HmIP-ASIR-2)
+ * @module      Alarmsirene 1 (Variable)
  *
- * @prefix      AS2
+ * @prefix      AS1
  *
  * @file        module.php
  *
@@ -20,20 +20,20 @@
  * @guids       Library
  *              {6984F242-48A3-5594-B0D1-061D71C6B0E5}
  *
- *              Alarmsirene 2
- *             	{3836A9EA-7DE0-508E-79CF-17D04C593D45}
+ *              Alarmsirene 1
+ *             	{856F7F9E-CA7F-823D-340F-A041937831E3}
  */
 
 declare(strict_types=1);
 
 include_once __DIR__ . '/helper/autoload.php';
 
-class Alarmsirene2 extends IPSModule
+class Alarmsirene1 extends IPSModule
 {
     //Helper
-    use AS2_alarmSiren;
-    use AS2_backupRestore;
-    use AS2_muteMode;
+    use AS1_alarmSiren;
+    use AS1_backupRestore;
+    use AS1_muteMode;
 
     //Constants
     private const DELAY_MILLISECONDS = 250;
@@ -72,7 +72,6 @@ class Alarmsirene2 extends IPSModule
         $this->SetResetSignallingAmountTimer();
         $this->ResetSignallingAmount();
         $this->ValidateConfiguration();
-        $this->CheckMaintenanceMode();
         $this->RegisterMessages();
         $this->SetMuteModeTimer();
         $this->CheckMuteModeTimer();
@@ -103,7 +102,7 @@ class Alarmsirene2 extends IPSModule
                 }
                 //Trigger action
                 if ($Data[1]) {
-                    $scriptText = 'AS2_CheckTrigger(' . $this->InstanceID . ', ' . $SenderID . ');';
+                    $scriptText = 'AS1_CheckTrigger(' . $this->InstanceID . ', ' . $SenderID . ');';
                     IPS_RunScriptText($scriptText);
                 }
                 break;
@@ -187,11 +186,6 @@ class Alarmsirene2 extends IPSModule
                 $this->ToggleAlarmSiren($Value);
                 break;
 
-            case 'AcousticSignal':
-            case 'OpticalSignal':
-                $this->SetValue($Ident, $Value);
-                break;
-
             case 'ResetSignallingAmount':
                 $this->ResetSignallingAmount();
                 break;
@@ -215,8 +209,6 @@ class Alarmsirene2 extends IPSModule
         //Functions
         $this->RegisterPropertyBoolean('MaintenanceMode', false);
         $this->RegisterPropertyBoolean('EnableAlarmSiren', true);
-        $this->RegisterPropertyBoolean('EnableAcousticSignal', true);
-        $this->RegisterPropertyBoolean('EnableOpticalSignal', true);
         $this->RegisterPropertyBoolean('EnableSignallingAmount', true);
         $this->RegisterPropertyBoolean('EnableResetSignallingAmount', true);
         $this->RegisterPropertyBoolean('EnableMuteMode', true);
@@ -225,11 +217,11 @@ class Alarmsirene2 extends IPSModule
         $this->RegisterPropertyInteger('AlarmSirenSwitchingDelay', 0);
         //Pre alarm
         $this->RegisterPropertyBoolean('UsePreAlarm', true);
+        $this->RegisterPropertyInteger('PreAlarmDuration', 3);
         //Main alarm
         $this->RegisterPropertyBoolean('UseMainAlarm', true);
         $this->RegisterPropertyInteger('MainAlarmSignallingDelay', 30);
         $this->RegisterPropertyInteger('MainAlarmAcousticSignallingDuration', 180);
-        $this->RegisterPropertyInteger('MainAlarmOpticalSignallingDuration', 5);
         $this->RegisterPropertyInteger('MainAlarmMaximumSignallingAmount', 3);
         //Trigger
         $this->RegisterPropertyString('TriggerVariables', '[]');
@@ -243,46 +235,8 @@ class Alarmsirene2 extends IPSModule
 
     private function CreateProfiles(): void
     {
-        //Acoustic signal
-        $profile = 'AS2.' . $this->InstanceID . '.AcousticSignal';
-        if (!IPS_VariableProfileExists($profile)) {
-            IPS_CreateVariableProfile($profile, 1);
-            IPS_SetVariableProfileIcon($profile, 'Speaker');
-        }
-        IPS_SetVariableProfileAssociation($profile, 0, 'Kein akustisches Signal', '', 0xFF0000);
-        IPS_SetVariableProfileAssociation($profile, 1, 'Frequenz steigend', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 2, 'Frequenz fallend', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 3, 'Frequenz steigend/fallend', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 4, 'Frequenz tief/hoch', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 5, 'Frequenz tief/mittel/hoch', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 6, 'Frequenz hoch ein/aus', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 7, 'Frequenz hoch ein, lang aus', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 8, 'Frequenz tief ein/aus, hoch ein/aus', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 9, 'Frequenz tief ein - lang aus, hoch ein - lang aus', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 10, 'Batterie leer', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 11, 'Unscharf', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 12, 'Intern Scharf', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 13, 'Extern Scharf', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 14, 'Intern verzögert Scharf', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 15, 'Extern verzögert Scharf', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 16, 'Ereignis', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 17, 'Fehler', '', 0x00FF00);
-        //Optical signal
-        $profile = 'AS2.' . $this->InstanceID . '.OpticalSignal';
-        if (!IPS_VariableProfileExists($profile)) {
-            IPS_CreateVariableProfile($profile, 1);
-            IPS_SetVariableProfileIcon($profile, 'Bulb');
-        }
-        IPS_SetVariableProfileAssociation($profile, 0, 'Kein optisches Signal', '', 0xFF0000);
-        IPS_SetVariableProfileAssociation($profile, 1, 'Abwechselndes langsames Blinken', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 2, 'Gleichzeitiges langsames Blinken', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 3, 'Gleichzeitiges schnelles Blinken', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 4, 'Gleichzeitiges kurzes Blinken', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 5, 'Bestätigungssignal 0 - lang lang', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 6, 'Bestätigungssignal 1 - lang kurz', '', 0x00FF00);
-        IPS_SetVariableProfileAssociation($profile, 7, 'Bestätigungssignal 2 - lang kurz kurz', '', 0x00FF00);
         //Reset signalling amount
-        $profile = 'AS2.' . $this->InstanceID . '.ResetSignallingAmount';
+        $profile = 'AS1.' . $this->InstanceID . '.ResetSignallingAmount';
         if (!IPS_VariableProfileExists($profile)) {
             IPS_CreateVariableProfile($profile, 1);
         }
@@ -291,10 +245,10 @@ class Alarmsirene2 extends IPSModule
 
     private function DeleteProfiles(): void
     {
-        $profiles = ['AcousticSignal', 'OpticalSignal', 'ResetSignallingAmount'];
+        $profiles = ['ResetSignallingAmount'];
         if (!empty($profiles)) {
             foreach ($profiles as $profile) {
-                $profileName = 'AS2.' . $this->InstanceID . '.' . $profile;
+                $profileName = 'AS1.' . $this->InstanceID . '.' . $profile;
                 if (IPS_VariableProfileExists($profileName)) {
                     IPS_DeleteVariableProfile($profileName);
                 }
@@ -309,20 +263,12 @@ class Alarmsirene2 extends IPSModule
         $this->EnableAction('AlarmSiren');
         $id = @$this->GetIDForIdent('AlarmSiren');
         IPS_SetIcon($id, 'Alert');
-        //Acoustic Signal
-        $profile = 'AS2.' . $this->InstanceID . '.AcousticSignal';
-        $this->RegisterVariableInteger('AcousticSignal', 'Akustisches Signal', $profile, 20);
-        $this->EnableAction('AcousticSignal');
-        //Optical Signal
-        $profile = 'AS2.' . $this->InstanceID . '.OpticalSignal';
-        $this->RegisterVariableInteger('OpticalSignal', 'Optisches Signal', $profile, 30);
-        $this->EnableAction('OpticalSignal');
         //Signalling amount
         $this->RegisterVariableInteger('SignallingAmount', 'Auslösungen', '', 40);
         $id = @$this->GetIDForIdent('SignallingAmount');
         IPS_SetIcon($id, 'Warning');
         //Reset signalling amount
-        $profile = 'AS2.' . $this->InstanceID . '.ResetSignallingAmount';
+        $profile = 'AS1.' . $this->InstanceID . '.ResetSignallingAmount';
         $this->RegisterVariableInteger('ResetSignallingAmount', 'Rückstellung', $profile, 50);
         $this->EnableAction('ResetSignallingAmount');
         //Mute mode
@@ -333,8 +279,6 @@ class Alarmsirene2 extends IPSModule
     private function SetOptions(): void
     {
         IPS_SetHidden($this->GetIDForIdent('AlarmSiren'), !$this->ReadPropertyBoolean('EnableAlarmSiren'));
-        IPS_SetHidden($this->GetIDForIdent('AcousticSignal'), !$this->ReadPropertyBoolean('EnableAcousticSignal'));
-        IPS_SetHidden($this->GetIDForIdent('OpticalSignal'), !$this->ReadPropertyBoolean('EnableOpticalSignal'));
         IPS_SetHidden($this->GetIDForIdent('SignallingAmount'), !$this->ReadPropertyBoolean('EnableSignallingAmount'));
         IPS_SetHidden($this->GetIDForIdent('ResetSignallingAmount'), !$this->ReadPropertyBoolean('EnableResetSignallingAmount'));
         IPS_SetHidden($this->GetIDForIdent('MuteMode'), !$this->ReadPropertyBoolean('EnableMuteMode'));
@@ -342,18 +286,18 @@ class Alarmsirene2 extends IPSModule
 
     private function RegisterTimers(): void
     {
-        $this->RegisterTimer('ActivateMainAlarm', 0, 'AS2_ActivateMainAlarm(' . $this->InstanceID . ');');
-        $this->RegisterTimer('DeactivateAcousticSignal', 0, 'AS2_DeactivateAcousticSignal(' . $this->InstanceID . ');');
-        $this->RegisterTimer('DeactivateMainAlarm', 0, 'AS2_DeactivateMainAlarm(' . $this->InstanceID . ');');
-        $this->RegisterTimer('ResetSignallingAmount', 0, 'AS2_ResetSignallingAmount(' . $this->InstanceID . ');');
-        $this->RegisterTimer('StartMuteMode', 0, 'AS2_StartMuteMode(' . $this->InstanceID . ');');
-        $this->RegisterTimer('StopMuteMode', 0, 'AS2_StopMuteMode(' . $this->InstanceID . ',);');
+        $this->RegisterTimer('ActivateMainAlarm', 0, 'AS1_ActivateMainAlarm(' . $this->InstanceID . ');');
+        $this->RegisterTimer('DeactivatePreAlarm', 0, 'AS1_DeactivatePreAlarm(' . $this->InstanceID . ');');
+        $this->RegisterTimer('DeactivateMainAlarm', 0, 'AS1_DeactivateMainAlarm(' . $this->InstanceID . ');');
+        $this->RegisterTimer('ResetSignallingAmount', 0, 'AS1_ResetSignallingAmount(' . $this->InstanceID . ');');
+        $this->RegisterTimer('StartMuteMode', 0, 'AS1_StartMuteMode(' . $this->InstanceID . ');');
+        $this->RegisterTimer('StopMuteMode', 0, 'AS1_StopMuteMode(' . $this->InstanceID . ',);');
     }
 
     private function DisableTimers(): void
     {
+        $this->SetTimerInterval('DeactivatePreAlarm', 0);
         $this->SetTimerInterval('ActivateMainAlarm', 0);
-        $this->SetTimerInterval('DeactivateAcousticSignal', 0);
         $this->SetTimerInterval('DeactivateMainAlarm', 0);
     }
 
@@ -370,14 +314,18 @@ class Alarmsirene2 extends IPSModule
     private function ValidateConfiguration(): void
     {
         $status = 102;
-        //Check acoustical and optical duration
-        $acousticDuration = $this->ReadPropertyInteger('MainAlarmAcousticSignallingDuration');
-        $opticalDuration = $this->ReadPropertyInteger('MainAlarmOpticalSignallingDuration') * 60;
-        if ($opticalDuration < $acousticDuration) {
-            $status = 200;
-            $message = 'Abbruch, die Dauer der optischen Signalisierung ist zu gering!';
-            $this->SendDebug(__FUNCTION__, $message, 0);
-            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_WARNING);
+        //Pre alarm
+        $usePreAlarm = $this->ReadPropertyBoolean('UsePreAlarm');
+        if ($usePreAlarm) {
+            //Check pre alarm duration and main alarm signalling delay
+            $preAlarmDuration = $this->ReadPropertyInteger('PreAlarmDuration');
+            $mainAlarmSignallingDelay = $this->ReadPropertyInteger('MainAlarmSignallingDelay');
+            if ($mainAlarmSignallingDelay <= ($preAlarmDuration + 2)) {
+                $status = 200;
+                $message = 'Abbruch, die Verzögerung für den Hauptalarm ist zu gering!';
+                $this->SendDebug(__FUNCTION__, $message, 0);
+                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_WARNING);
+            }
         }
         //Maintenance mode
         $maintenance = $this->CheckMaintenanceMode();

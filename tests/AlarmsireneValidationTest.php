@@ -14,8 +14,18 @@ class AlarmsireneValidationTest extends TestCaseSymconValidation
         $this->validateModule(__DIR__ . '/../Alarmsirene');
     }
 
+    public function testValidateAlarmsirene1Module(): void
+    {
+        $this->validateModule(__DIR__ . '/../Alarmsirene 1');
+    }
+
     public function testValidateAlarmsirene2Module(): void
     {
         $this->validateModule(__DIR__ . '/../Alarmsirene 2');
+    }
+
+    public function testValidateAlarmsirene3Module(): void
+    {
+        $this->validateModule(__DIR__ . '/../Alarmsirene 3');
     }
 }
