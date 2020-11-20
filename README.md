@@ -11,10 +11,10 @@
 Folgende Module beinhaltet das Alarmsirene Repository:  
 
 - __Alarmsirene 1__ ([Dokumentation](Alarmsirene%201))  
-    Schaltet eine Variable, z.B. für eine Alarmsirene.
+    Dieses Modul schaltet eine Variable, um eine Alarmsirene zu schalten.
     
 - __Alarmsirene 2__ ([Dokumentation](Alarmsirene%202))  
-    Schaltet eine Homematic IP Alarmsirene.  
+    Dieses Modul schaltet eine Homematic IP Alarmsirene.  
     
     Unterstütze Geräte:
     * HmIP-ASIR
@@ -22,7 +22,7 @@ Folgende Module beinhaltet das Alarmsirene Repository:
     * HmIP-ASIR-2
     
 - __Alarmsirene 3__ ([Dokumentation](Alarmsirene%203))  
-    Schaltet eine HomeMatic Alarmsirene.  
+    Dieses Modul schaltet eine HomeMatic Alarmsirene.  
         
     Unterstütze Geräte:
     * HM-Sec-Sir-WM
