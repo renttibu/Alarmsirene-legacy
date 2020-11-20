@@ -489,12 +489,12 @@ trait AS2_alarmSiren
                             $triggerAction = $variable->TriggerAction;
                             switch ($triggerAction) {
                                 case 0:
-                                    $this->SendDebug(__FUNCTION__, 'Aktion: Alarmbeleuchtung ausschalten', 0);
+                                    $this->SendDebug(__FUNCTION__, 'Aktion: Alarmsirene ausschalten', 0);
                                     $result = $this->ToggleAlarmSiren(false);
                                     break;
 
                                 case 1:
-                                    $this->SendDebug(__FUNCTION__, 'Aktion: Alarmbeleuchtung einschalten', 0);
+                                    $this->SendDebug(__FUNCTION__, 'Aktion: Alarmsirene einschalten', 0);
                                     if ($this->CheckMaintenanceMode()) {
                                         return false;
                                     }
