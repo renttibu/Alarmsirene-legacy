@@ -11,7 +11,7 @@
         },
         {
           "type": "Label",
-          "caption": "\nBitte wählen Sie die zu steuernden Funktionen aus"
+          "caption": " "
         },
         {
           "type": "CheckBox",
@@ -37,104 +37,8 @@
     },
     {
       "type": "ExpansionPanel",
-      "caption": "Alarmsirene",
-      "items": [
-        {
-          "type": "Label",
-          "caption": "Bitte wählen Sie die Instanz für die Alarmsirene (Kanal 3) aus"
-        },
-        {
-          "type": "SelectInstance",
-          "name": "AlarmSiren",
-          "caption": "Alarmsirene",
-          "width": "600px"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Schaltverzögerung an"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "AlarmSirenSwitchingDelay",
-          "caption": "Schaltverzögerung",
-          "minimum": 0,
-          "suffix": "Millisekunden"
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Voralarm",
-      "items": [
-        {
-          "type": "CheckBox",
-          "name": "UsePreAlarm",
-          "caption": "Voralarm"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte wählen Sie die Instanz für die Alarmsirene (Kanal 4) aus"
-        },
-        {
-          "type": "SelectInstance",
-          "name": "PreAlarmSiren",
-          "caption": "Alarmsirene",
-          "width": "600px"
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Hauptalarm",
-      "items": [
-        {
-          "type": "CheckBox",
-          "name": "UseMainAlarm",
-          "caption": "Hauptalarm"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Einschaltverzögerung an"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmSignallingDelay",
-          "caption": "Einschaltverzögerung",
-          "minimum": 0,
-          "suffix": "Sekunden"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Dauer für die akustische Signalisierung an"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmAcousticSignallingDuration",
-          "caption": "Akustische Signalisierung",
-          "minimum": 0,
-          "maximum": 180,
-          "suffix": "Sekunden"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die maximale Anzahl der Auslösungen bis zur Rückstellung an"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmMaximumSignallingAmount",
-          "caption": "Maximale Auslösungen",
-          "minimum": 0
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
       "caption": "Auslöser",
       "items": [
-        {
-          "type": "Label",
-          "caption": "Bitte fügen Sie die auslösenden Variablen hinzu"
-        },
         {
           "type": "List",
           "name": "TriggerVariables",
@@ -166,8 +70,8 @@
               }
             },
             {
-              "caption": "Einschalten",
-              "name": "TriggerValueOn",
+              "caption": "Auslösender Wert",
+              "name": "TriggerValue",
               "width": "200px",
               "add": 1,
               "edit": {
@@ -184,32 +88,32 @@
                   {
                     "caption": "2",
                     "value": 2
+                  },
+                  {
+                    "caption": "3",
+                    "value": 3
                   }
                 ]
               }
             },
             {
-              "caption": "Ausschalten",
-              "name": "TriggerValueOff",
+              "caption": "Aktion",
+              "name": "TriggerAction",
               "width": "200px",
-              "add": -1,
+              "add": 1,
               "edit": {
                 "type": "Select",
                 "options": [
                   {
-                    "caption": "Keine Aktion",
-                    "value": -1
-                  },
-                  {
-                    "caption": "0 | false",
+                    "caption": "Alarmsirene ausschalten",
                     "value": 0
                   },
                   {
-                    "caption": "1 | true",
+                    "caption": "Alarmsirene einschalten",
                     "value": 1
                   },
                   {
-                    "caption": "2",
+                    "caption": "Panikalarm",
                     "value": 2
                   }
                 ]
@@ -221,17 +125,89 @@
     },
     {
       "type": "ExpansionPanel",
-      "caption": "Alarmprotokoll",
+      "caption": "Alarmsirene",
       "items": [
         {
           "type": "Label",
-          "caption": "Bitte wählen Sie die Instanz für das Alarmprotokoll aus"
+          "caption": "Bitte wählen Sie die Instanz für den Voralarm (Kanal 4) aus"
         },
         {
           "type": "SelectInstance",
+          "name": "PreAlarmSiren",
+          "caption": "Voralarm",
+          "width": "600px"
+        },
+        {
+          "type": "Label",
+          "caption": "Bitte wählen Sie die Instanz für den Hauptalarm (Kanal 3) aus"
+        },
+        {
+          "type": "SelectInstance",
+          "name": "AlarmSiren",
+          "caption": "Hauptalarm",
+          "width": "600px"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "AlarmSirenSwitchingDelay",
+          "caption": "Schaltverzögerung",
+          "minimum": 0,
+          "suffix": "Millisekunden"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Voralarm",
+      "items": [
+        {
+          "type": "CheckBox",
+          "name": "UsePreAlarm",
+          "caption": "Voralarm"
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Hauptalarm",
+      "items": [
+        {
+          "type": "CheckBox",
+          "name": "UseMainAlarm",
+          "caption": "Hauptalarm"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmSignallingDelay",
+          "caption": "Einschaltverzögerung",
+          "minimum": 0,
+          "suffix": "Sekunden"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmAcousticSignallingDuration",
+          "caption": "Akustische Signalisierung",
+          "minimum": 0,
+          "maximum": 180,
+          "suffix": "Sekunden"
+        },
+        {
+          "type": "NumberSpinner",
+          "name": "MainAlarmMaximumSignallingAmount",
+          "caption": "Maximale Auslösungen",
+          "minimum": 0
+        }
+      ]
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Alarmprotokoll",
+      "items": [
+        {
+          "type": "SelectModule",
           "name": "AlarmProtocol",
           "caption": "Alarmprotokoll",
-          "width": "600px"
+          "moduleID": "{33EF9DF1-C8D7-01E7-F168-0A1927F1C61F}"
         }
       ]
     },
@@ -245,17 +221,9 @@
           "caption": "Automatische Stummschaltung"
         },
         {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Startzeit für die Stummschaltung an"
-        },
-        {
           "type": "SelectTime",
           "name": "MuteModeStartTime",
           "caption": "Startzeit"
-        },
-        {
-          "type": "Label",
-          "caption": "\nBitte geben Sie die Endzeit für die Stummschaltung an"
         },
         {
           "type": "SelectTime",
@@ -380,6 +348,15 @@
       "items": [
         {
           "type": "TestCenter"
+        },
+        {
+          "type": "Label",
+          "caption": " "
+        },
+        {
+          "type": "Button",
+          "caption": "Panikalarm auslösen",
+          "onClick": "AS3_TriggerMainAlarm($id);"
         }
       ]
     }
@@ -388,22 +365,22 @@
     {
       "code": 101,
       "icon": "active",
-      "caption": "Alarmsirene wird erstellt"
+      "caption": "Alarmsirene 3 (HomeMatic) wird erstellt"
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Alarmsirene ist aktiv"
+      "caption": "Alarmsirene 3 (HomeMatic) ist aktiv"
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Alarmsirene wird gelöscht"
+      "caption": "Alarmsirene 3 (HomeMatic) wird gelöscht"
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Alarmsirene ist inaktiv"
+      "caption": "Alarmsirene 3 (HomeMatic) ist inaktiv"
     },
     {
       "code": 200,

@@ -4,9 +4,9 @@
     "name": "Alarmsirene",
     "url": "https://github.com/ubittner/Alarmsirene",
     "compatibility": {
-        "version": "5.2"
+        "version": "5.4"
     },
-    "version": "4.00",
-    "build": 4,
-    "date": 1604430273
+    "version": "5.00",
+    "build": 1,
+    "date": 1605857125
 }

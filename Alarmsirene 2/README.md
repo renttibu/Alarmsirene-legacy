@@ -1,4 +1,4 @@
-# Alarmsirene 2 (HmIP-ASIR, HmIP-ASIR-O, HmIP-ASIR-2)
+# Alarmsirene 2 (Homematic IP)  
 
 Für dieses Modul besteht kein Anspruch auf Fehlerfreiheit, Weiterentwicklung, sonstige Unterstützung oder Support.
 Bevor das Modul installiert wird, sollte unbedingt ein Backup von IP-Symcon durchgeführt werden.

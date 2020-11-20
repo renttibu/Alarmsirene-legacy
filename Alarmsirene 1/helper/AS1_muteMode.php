@@ -1,11 +1,28 @@
 <?php
 
-/** @noinspection PhpUnused */
+/** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection DuplicatedCode */
+/** @noinspection PhpUnused */
+
+/*
+ * @module      Alarmsirene 1 (Variable)
+ *
+ * @prefix      AS1
+ *
+ * @file        AS1_muteMode.php
+ *
+ * @author      Ulrich Bittner
+ * @copyright   (c) 2020
+ * @license    	CC BY-NC-SA 4.0
+ *              https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ * @see         https://github.com/ubittner/Alarmsirene
+ *
+ */
 
 declare(strict_types=1);
 
-trait AS3_muteMode
+trait AS1_muteMode
 {
     /**
      * Toggles the mute mode off or on.
@@ -21,7 +38,6 @@ trait AS3_muteMode
     public function ToggleMuteMode(bool $State): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        //Check maintenance mode
         if ($this->CheckMaintenanceMode()) {
             return false;
         }
@@ -34,7 +50,7 @@ trait AS3_muteMode
     }
 
     /**
-     * Starts the mute mode, used by timer.
+     * Starts the mute mode, normally used by timer.
      */
     public function StartMuteMode(): void
     {
@@ -44,7 +60,7 @@ trait AS3_muteMode
     }
 
     /**
-     * Stops the night mode, used by timer.
+     * Stops the night mode, normally used by timer.
      */
     public function StopMuteMode(): void
     {
@@ -112,5 +128,15 @@ trait AS3_muteMode
         } else {
             $this->ToggleMuteMode(false);
         }
+    }
+
+    private function CheckMuteMode(): bool
+    {
+        $muteMode = boolval($this->GetValue('MuteMode'));
+        if ($muteMode) {
+            $text = 'Abbruch, die Stummschaltung ist aktiv!';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+        }
+        return $muteMode;
     }
 }

@@ -4,7 +4,7 @@
   "type": 3,
   "vendor": "Ulrich Bittner",
   "aliases": [
-    "Alarmsirene 3 (HM-Sec-Sir-WM)"
+    "Alarmsirene 3 (HomeMatic)"
   ],
   "url": "https://github.com/ubittner/Alarmsirene",
   "parentRequirements": [],

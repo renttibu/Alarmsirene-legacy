@@ -2,7 +2,22 @@
 
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnused */
-/** @noinspection PhpUndefinedFunctionInspection */
+
+/*
+ * @module      Alarmsirene 2 (Homematic IP)
+ *
+ * @prefix      AS2
+ *
+ * @file        AS2_alarmSiren.php
+ *
+ * @author      Ulrich Bittner
+ * @copyright   (c) 2020
+ * @license    	CC BY-NC-SA 4.0
+ *              https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ * @see         https://github.com/ubittner/Alarmsirene
+ *
+ */
 
 declare(strict_types=1);
 
@@ -74,30 +89,23 @@ trait AS2_alarmSiren
     public function ToggleAlarmSiren(bool $State): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wurde mit Parameter ' . json_encode($State) . ' ausgeführt (' . microtime(true) . ')', 0);
-        $result = false;
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return $result;
-        }
-        //Check alarm siren
+        $this->DisableTimers();
         if (!$this->CheckAlarmSiren()) {
-            return $result;
+            return false;
         }
+        $result = true;
         $id = $this->ReadPropertyInteger('AlarmSiren');
         $actualAlarmSirenState = $this->GetValue('AlarmSiren');
         $actualSignallingAmount = $this->GetValue('SignallingAmount');
         //Deactivate
         if (!$State) {
-            $this->SendDebug(__FUNCTION__, 'Die Alarmsirene wird ausgeschaltet.', 0);
-            $this->WriteAttributeBoolean('MainAlarm', false);
-            $this->UpdateParameter();
-            $this->DisableTimers();
-            $this->SetValue('AlarmSiren', false);
+            $this->SendDebug(__FUNCTION__, 'Die Alarmsirene wird ausgeschaltet', 0);
             IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
             //Semaphore Enter
             if (!IPS_SemaphoreEnter($this->InstanceID . '.ToggleAlarmSiren', 5000)) {
-                return $result;
+                return false;
             }
+            $this->SetValue('AlarmSiren', false);
             $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
             $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
             $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
@@ -110,30 +118,46 @@ trait AS2_alarmSiren
                 $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
                 $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
                 if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
-                    $result = false;
-                    //Revert
-                    $this->SetValue('AlarmSiren', $actualAlarmSirenState);
-                    $this->SetValue('SignallingAmount', $actualSignallingAmount);
-                    $message = 'Fehler, die Alarmsirene konnte nicht ausgeschaltet werden!';
-                    $this->SendDebug(__FUNCTION__, $message, 0);
-                    $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
+                    IPS_Sleep(self::DELAY_MILLISECONDS * 2);
+                    $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
+                    $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
+                    $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
+                    $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
+                    if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
+                        $result = false;
+                    }
                 }
-            }
-            if ($result) {
-                //Protocol
-                $text = 'Die Alarmsirene wurde ausgeschaltet. (ID ' . $id . ')';
-                $this->UpdateProtocol($text);
             }
             //Semaphore leave
             IPS_SemaphoreLeave($this->InstanceID . '.ToggleAlarmSiren');
+            if ($result) {
+                $this->WriteAttributeBoolean('MainAlarm', false);
+                $this->UpdateParameter();
+                $text = 'Die Alarmsirene wurde ausgeschaltet';
+                $this->SendDebug(__FUNCTION__, $text, 0);
+                if ($State != $actualAlarmSirenState) {
+                    $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
+                }
+            } else {
+                //Revert on failure
+                $this->SetValue('AlarmSiren', $actualAlarmSirenState);
+                $this->SetValue('SignallingAmount', $actualSignallingAmount);
+                $text = 'Fehler, die Alarmsirene konnte nicht ausgeschaltet werden!';
+                $this->SendDebug(__FUNCTION__, $text, 0);
+                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_ERROR);
+                if ($State != $actualAlarmSirenState) {
+                    $this->UpdateAlarmProtocol($text . ' (ID ' . $id . ')');
+                }
+            }
         }
         //Activate
         if ($State) {
-            //Check mute mode
+            if ($this->CheckMaintenanceMode()) {
+                return $result;
+            }
             if ($this->CheckMuteMode()) {
                 return $result;
             }
-            //Check signaling amount
             if (!$this->CheckSignallingAmount()) {
                 return $result;
             }
@@ -141,18 +165,23 @@ trait AS2_alarmSiren
             if ($this->CheckMainAlarm()) {
                 return $result;
             }
-            $this->SetValue('AlarmSiren', true);
             //Delay
             $delay = $this->ReadPropertyInteger('MainAlarmSignallingDelay');
             if ($delay > 0) {
                 $this->SetTimerInterval('ActivateMainAlarm', $delay * 1000);
-                $this->SendDebug(__FUNCTION__, 'Die Alarmsirene wird in ' . $delay . ' Sekunden eingeschaltet.', 0);
-                if (!$actualAlarmSirenState) {
-                    //Protocol
-                    $text = 'Die Alarmsirene wird in ' . $delay . ' Sekunden eingeschaltet. (ID ' . $id . ')';
-                    $this->UpdateProtocol($text);
+                $unit = 'Sekunden';
+                if ($delay == 1) {
+                    $unit = 'Sekunde';
                 }
-                //Check pre alarm
+                $this->SetValue('AlarmSiren', true);
+                $text = 'Die Alarmsirene wird in ' . $delay . ' ' . $unit . ' eingeschaltet';
+                $this->SendDebug(__FUNCTION__, $text, 0);
+                if (!$actualAlarmSirenState) {
+                    if ($State != $actualAlarmSirenState) {
+                        $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
+                    }
+                }
+                //Check pre alarm (delay needed for main alarm)
                 if ($this->ReadPropertyBoolean('UsePreAlarm')) {
                     $result = $this->TriggerPreAlarm();
                 }
@@ -160,57 +189,8 @@ trait AS2_alarmSiren
             //No delay, activate alarm siren immediately
             else {
                 $result = $this->ActivateMainAlarm();
-                if (!$result) {
-                    //Revert
-                    $this->SetValue('AlarmSiren', $actualAlarmSirenState);
-                    $this->SetValue('SignallingAmount', $actualSignallingAmount);
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Checks the trigger variable.
-     *
-     * @param int $SenderID
-     *
-     * @return bool
-     * false    = an error occurred
-     * true     = successful
-     *
-     * @throws Exception
-     */
-    public function CheckTrigger(int $SenderID): bool
-    {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return false;
-        }
-        //Check mute mode
-        if ($this->CheckMuteMode()) {
-            return false;
-        }
-        $result = true;
-        //Trigger variables
-        $triggerVariables = json_decode($this->ReadPropertyString('TriggerVariables'));
-        if (!empty($triggerVariables)) {
-            foreach ($triggerVariables as $variable) {
-                $id = $variable->ID;
-                if ($SenderID == $id) {
-                    $use = $variable->ID;
-                    if ($use) {
-                        $actualValue = intval(GetValue($id));
-                        $triggerValueOn = $variable->TriggerValueOn;
-                        if ($actualValue == $triggerValueOn) {
-                            $result = $this->ToggleAlarmSiren(true);
-                        }
-                        $triggerValueOff = $variable->TriggerValueOff;
-                        if ($actualValue == $triggerValueOff) {
-                            $result = $this->ToggleAlarmSiren(false);
-                        }
-                    }
+                if ($State != $actualAlarmSirenState) {
+                    $result = $this->ActivateMainAlarm();
                 }
             }
         }
@@ -229,25 +209,25 @@ trait AS2_alarmSiren
     public function TriggerPreAlarm(): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        $result = false;
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return $result;
+        if (!$this->ReadPropertyBoolean('UsePreAlarm')) {
+            $this->SendDebug(__FUNCTION__, 'Der Voralarm ist nicht aktiviert!', 0);
+            return false;
         }
-        //Check mute mode
-        if ($this->CheckMuteMode()) {
-            return $result;
-        }
-        //Check alarm siren
         if (!$this->CheckAlarmSiren()) {
-            return $result;
+            return false;
         }
-        IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
-        //Semaphore Enter
-        if (!IPS_SemaphoreEnter($this->InstanceID . '.PreAlarm', 5000)) {
-            return $result;
+        if ($this->CheckMaintenanceMode()) {
+            return false;
+        }
+        if ($this->CheckMuteMode()) {
+            return false;
         }
         $result = true;
+        IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
+        //Semaphore Enter
+        if (!IPS_SemaphoreEnter($this->InstanceID . '.TriggerPreAlarm', 5000)) {
+            return false;
+        }
         $id = $this->ReadPropertyInteger('AlarmSiren');
         $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
         $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
@@ -261,17 +241,57 @@ trait AS2_alarmSiren
             $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 3);
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 $result = false;
-                $message = 'Fehler, der Voralarm konnte nicht ausgegeben werden!';
-                $this->SendDebug(__FUNCTION__, $message, 0);
-                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
             }
         }
         //Semaphore leave
-        IPS_SemaphoreLeave($this->InstanceID . '.PreAlarm');
+        IPS_SemaphoreLeave($this->InstanceID . '.TriggerPreAlarm');
         if ($result) {
-            $this->SendDebug(__FUNCTION__, 'Der Voralarm wurde erfolgreich ausgegeben.', 0);
+            $text = 'Der Voralarm wurde eingeschaltet';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
+        } else {
+            $text = 'Fehler, der Voralarm konnte nicht eingeschaltet werden!';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_ERROR);
+            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         }
         return $result;
+    }
+
+    /**
+     * Activates the main alarm.
+     *
+     * @return bool
+     * false    = an error occurred
+     * true     = successful
+     *
+     * @throws Exception
+     */
+    public function ActivateMainAlarm(): bool
+    {
+        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
+        $this->SetTimerInterval('ActivateMainAlarm', 0);
+        if (!$this->ReadPropertyBoolean('UseMainAlarm')) {
+            $this->SendDebug(__FUNCTION__, 'Der Hauptalarm ist nicht aktiviert!', 0);
+            return false;
+        }
+        if (!$this->CheckAlarmSiren()) {
+            return false;
+        }
+        if ($this->CheckMaintenanceMode()) {
+            return false;
+        }
+        if ($this->CheckMuteMode()) {
+            return false;
+        }
+        if (!$this->CheckSignallingAmount()) {
+            return false;
+        }
+        //Check if the main alarm is already turned on
+        if ($this->CheckMainAlarm()) {
+            return false;
+        }
+        return $this->TriggerMainAlarm();
     }
 
     /**
@@ -283,44 +303,23 @@ trait AS2_alarmSiren
      *
      * @throws Exception
      */
-    public function ActivateMainAlarm(): bool
+    public function TriggerMainAlarm(): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        $result = false;
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return $result;
-        }
-        //Check mute mode
-        if ($this->CheckMuteMode()) {
-            return $result;
-        }
-        //Check signaling amount
-        if (!$this->CheckSignallingAmount()) {
-            return $result;
-        }
-        //Check if the main alarm is already turned on
-        if ($this->CheckMainAlarm()) {
-            return $result;
-        }
-        //Check alarm siren
+        $this->DisableTimers();
         if (!$this->CheckAlarmSiren()) {
-            return $result;
+            return false;
         }
-        $this->WriteAttributeBoolean('MainAlarm', true);
-        $this->UpdateParameter();
-        $this->SetTimerInterval('ActivateMainAlarm', 0);
         $this->SetValue('AlarmSiren', true);
-        $this->SetValue('SignallingAmount', $this->GetValue('SignallingAmount') + 1);
-        $acousticSignal = $this->GetValue('AcousticSignal');
-        $opticalSignal = $this->GetValue('OpticalSignal');
-        $duration = $this->ReadPropertyInteger('MainAlarmAcousticSignallingDuration');
         IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
         //Semaphore Enter
-        if (!IPS_SemaphoreEnter($this->InstanceID . '.MainAlarm', 5000)) {
-            return $result;
+        if (!IPS_SemaphoreEnter($this->InstanceID . '.TriggerMainAlarm', 5000)) {
+            return false;
         }
         $result = true;
+        $duration = $this->ReadPropertyInteger('MainAlarmAcousticSignallingDuration');
+        $acousticSignal = $this->GetValue('AcousticSignal');
+        $opticalSignal = $this->GetValue('OpticalSignal');
         $id = $this->ReadPropertyInteger('AlarmSiren');
         $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
         $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
@@ -334,18 +333,31 @@ trait AS2_alarmSiren
             $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 $result = false;
-                $message = 'Fehler, der Hauptalarm konnte nicht ausgegeben werden!';
-                $this->SendDebug(__FUNCTION__, $message, 0);
-                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
             }
         }
         //Semaphore leave
-        IPS_SemaphoreLeave($this->InstanceID . '.MainAlarm');
+        IPS_SemaphoreLeave($this->InstanceID . '.TriggerMainAlarm');
         if ($result) {
-            $this->SendDebug(__FUNCTION__, 'Der Hauptalarm wurde erfolgreich ausgegeben.', 0);
-            //Protocol
-            $text = 'Die Alarmsirene wurde eingeschaltet. (ID ' . $id . ')';
-            $this->UpdateProtocol($text);
+            $this->SetValue('SignallingAmount', $this->GetValue('SignallingAmount') + 1);
+            $this->WriteAttributeBoolean('MainAlarm', true);
+            $this->UpdateParameter();
+            $text = 'Die Alarmsirene wurde eingeschaltet';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
+            $unit = 'Sekunden';
+            if ($duration == 1) {
+                $unit = 'Sekunde';
+            }
+            $text = 'Die Alarmsirene wird in ' . $duration . ' ' . $unit . ' ausgeschaltet';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
+        } else {
+            //Revert on failure
+            $this->SetValue('AlarmSiren', false);
+            $text = 'Fehler, die Alarmsirene konnte nicht eingeschaltet werden!';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_ERROR);
+            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         }
         $this->SetTimerInterval('DeactivateAcousticSignal', $duration * 1000);
         return $result;
@@ -363,20 +375,15 @@ trait AS2_alarmSiren
     public function DeactivateAcousticSignal(): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        $result = false;
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return $result;
-        }
-        //Check alarm siren
+        $this->DisableTimers();
         if (!$this->CheckAlarmSiren()) {
-            return $result;
+            return false;
         }
-        $this->SetTimerInterval('DeactivateAcousticSignal', 0);
+        $result = true;
         $acousticDuration = $this->ReadPropertyInteger('MainAlarmAcousticSignallingDuration');
         $opticalDuration = $this->ReadPropertyInteger('MainAlarmOpticalSignallingDuration') * 60;
         if ($opticalDuration == $acousticDuration) {
-            $result = $this->ToggleAlarmSiren(false);
+            return $this->ToggleAlarmSiren(false);
         }
         if ($opticalDuration > $acousticDuration) {
             $opticalSignal = $this->GetValue('OpticalSignal');
@@ -384,9 +391,8 @@ trait AS2_alarmSiren
             IPS_Sleep($this->ReadPropertyInteger('AlarmSirenSwitchingDelay'));
             //Semaphore Enter
             if (!IPS_SemaphoreEnter($this->InstanceID . '.DeactivateAcousticSignal', 5000)) {
-                return $result;
+                return false;
             }
-            $result = true;
             $id = $this->ReadPropertyInteger('AlarmSiren');
             $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
             $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
@@ -399,10 +405,14 @@ trait AS2_alarmSiren
                 $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
                 $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
                 if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
-                    $result = false;
-                    $message = 'Fehler, das akustische Signal konnte nicht deaktiviert werden!';
-                    $this->SendDebug(__FUNCTION__, $message, 0);
-                    $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_ERROR);
+                    IPS_Sleep(self::DELAY_MILLISECONDS);
+                    $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
+                    $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
+                    $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
+                    $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+                    if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
+                        $result = false;
+                    }
                 }
             }
             //Semaphore leave
@@ -410,6 +420,11 @@ trait AS2_alarmSiren
             if ($result) {
                 $this->SendDebug(__FUNCTION__, 'Das akustische Signal wurde erfolgreich deaktiviert.', 0);
                 $this->SendDebug(__FUNCTION__, 'Das optische Signal wurde erfolgreich aktiviert.', 0);
+            } else {
+                $text = 'Fehler, das akustische Signal konnte nicht deaktiviert werden!';
+                $this->SendDebug(__FUNCTION__, $text, 0);
+                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_ERROR);
+                $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
             }
             $this->SetTimerInterval('DeactivateMainAlarm', $duration * 1000);
         }
@@ -417,7 +432,7 @@ trait AS2_alarmSiren
     }
 
     /**
-     * Deactivates the optical Signalling
+     * Deactivates the main alarm
      *
      * @return bool
      * false    = an error occurred
@@ -428,10 +443,6 @@ trait AS2_alarmSiren
     public function DeactivateMainAlarm(): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        //Check maintenance mode
-        if ($this->CheckMaintenanceMode()) {
-            return false;
-        }
         $this->SetTimerInterval('DeactivateMainAlarm', 0);
         return $this->ToggleAlarmSiren(false);
     }
@@ -445,6 +456,75 @@ trait AS2_alarmSiren
         $this->SetValue('SignallingAmount', 0);
     }
 
+    /**
+     * Checks the trigger variable.
+     *
+     * @param int $SenderID
+     *
+     * @return bool
+     * false    = an error occurred
+     * true     = successful
+     *
+     * @throws Exception
+     */
+    public function CheckTriggerVariable(int $SenderID): bool
+    {
+        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
+        if (!$this->CheckAlarmSiren()) {
+            return false;
+        }
+        $result = true;
+        //Trigger variables
+        $triggerVariables = json_decode($this->ReadPropertyString('TriggerVariables'));
+        if (!empty($triggerVariables)) {
+            foreach ($triggerVariables as $variable) {
+                $id = $variable->ID;
+                if ($SenderID == $id) {
+                    if ($variable->Use) {
+                        $actualValue = intval(GetValue($id));
+                        $this->SendDebug(__FUNCTION__, 'Aktueller Wert: ' . $actualValue, 0);
+                        $triggerValue = $variable->TriggerValue;
+                        $this->SendDebug(__FUNCTION__, 'Auslösender Wert: ' . $triggerValue, 0);
+                        if ($actualValue == $triggerValue) {
+                            $triggerAction = $variable->TriggerAction;
+                            switch ($triggerAction) {
+                                case 0:
+                                    $this->SendDebug(__FUNCTION__, 'Aktion: Alarmbeleuchtung ausschalten', 0);
+                                    $result = $this->ToggleAlarmSiren(false);
+                                    break;
+
+                                case 1:
+                                    $this->SendDebug(__FUNCTION__, 'Aktion: Alarmbeleuchtung einschalten', 0);
+                                    if ($this->CheckMaintenanceMode()) {
+                                        return false;
+                                    }
+                                    if ($this->CheckMuteMode()) {
+                                        return false;
+                                    }
+                                    $result = $this->ToggleAlarmSiren(true);
+                                    break;
+
+                                case 2:
+                                    $this->SendDebug(__FUNCTION__, 'Aktion: Panikalarm', 0);
+                                    if ($this->CheckMaintenanceMode()) {
+                                        return false;
+                                    }
+                                    $result = $this->TriggerMainAlarm();
+                                    break;
+
+                                default:
+                                    $this->SendDebug(__FUNCTION__, 'Es soll keine Aktion erfolgen!', 0);
+                            }
+                        } else {
+                            $this->SendDebug(__FUNCTION__, 'Keine Übereinstimmung!', 0);
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
     #################### Private
 
     /**
@@ -456,16 +536,14 @@ trait AS2_alarmSiren
      */
     private function CheckAlarmSiren(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        $result = true;
         $id = $this->ReadPropertyInteger('AlarmSiren');
         if ($id == 0 || @!IPS_ObjectExists($id)) {
-            $result = false;
-            $message = 'Abbruch, es ist keine Alarmsirene ausgewählt!';
-            $this->SendDebug(__FUNCTION__, $message, 0);
-            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_WARNING);
+            $text = 'Abbruch, es ist keine Alarmsirene ausgewählt!';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_WARNING);
+            return false;
         }
-        return $result;
+        return true;
     }
 
     /**
@@ -480,9 +558,9 @@ trait AS2_alarmSiren
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
         $state = $this->ReadAttributeBoolean('MainAlarm');
         if ($state) {
-            $message = 'Abbruch, die akustische Signalisierung ist bereits eingeschaltet!';
-            $this->SendDebug(__FUNCTION__, $message, 0);
-            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_WARNING);
+            $text = 'Abbruch, die akustische Signalisierung ist bereits eingeschaltet!';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+            $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_WARNING);
         }
         return $state;
     }
@@ -497,36 +575,16 @@ trait AS2_alarmSiren
     private function CheckSignallingAmount(): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        $execute = true;
         $maximum = $this->ReadPropertyInteger('MainAlarmMaximumSignallingAmount');
         if ($maximum > 0) {
             if ($this->GetValue('SignallingAmount') >= $maximum) {
-                $execute = false;
-                $message = 'Abbruch, die maximale Anzahl der Auslösungen wurde bereits erreicht!';
-                $this->SendDebug(__FUNCTION__, $message, 0);
-                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $message, KL_WARNING);
+                $text = 'Abbruch, die maximale Anzahl der Auslösungen wurde bereits erreicht!';
+                $this->SendDebug(__FUNCTION__, $text, 0);
+                $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_WARNING);
+                return false;
             }
         }
-        return $execute;
-    }
-
-    /**
-     * Updates the protocol.
-     *
-     * @param string $Message
-     */
-    private function UpdateProtocol(string $Message): void
-    {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
-        if ($this->CheckMaintenanceMode()) {
-            return;
-        }
-        $protocolID = $this->ReadPropertyInteger('AlarmProtocol');
-        if ($protocolID != 0 && @IPS_ObjectExists($protocolID)) {
-            $timestamp = date('d.m.Y, H:i:s');
-            $logText = $timestamp . ', ' . $Message;
-            @APRO_UpdateMessages($protocolID, $logText, 0);
-        }
+        return true;
     }
 
     /**

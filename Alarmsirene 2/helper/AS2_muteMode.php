@@ -1,11 +1,28 @@
 <?php
 
-/** @noinspection PhpUnused */
+/** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection DuplicatedCode */
+/** @noinspection PhpUnused */
+
+/*
+ * @module      Alarmsirene 2 (Homematic IP)
+ *
+ * @prefix      AS2
+ *
+ * @file        AS2_muteMode.php
+ *
+ * @author      Ulrich Bittner
+ * @copyright   (c) 2020
+ * @license    	CC BY-NC-SA 4.0
+ *              https://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ * @see         https://github.com/ubittner/Alarmsirene
+ *
+ */
 
 declare(strict_types=1);
 
-trait AS1_muteMode
+trait AS2_muteMode
 {
     /**
      * Toggles the mute mode off or on.
@@ -112,5 +129,15 @@ trait AS1_muteMode
         } else {
             $this->ToggleMuteMode(false);
         }
+    }
+
+    private function CheckMuteMode(): bool
+    {
+        $muteMode = boolval($this->GetValue('MuteMode'));
+        if ($muteMode) {
+            $text = 'Abbruch, die Stummschaltung ist aktiv!';
+            $this->SendDebug(__FUNCTION__, $text, 0);
+        }
+        return $muteMode;
     }
 }

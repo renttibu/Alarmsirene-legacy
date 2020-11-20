@@ -4,7 +4,7 @@
 /** @noinspection PhpUnused */
 
 /*
- * @module      Alarmsirene 3 (HM-Sec-Sir-WM)
+ * @module      Alarmsirene 3 (HomeMatic)
  *
  * @prefix      AS3
  *
@@ -17,11 +17,6 @@
  *
  * @see         https://github.com/ubittner/Alarmsirene
  *
- * @guids       Library
- *              {6984F242-48A3-5594-B0D1-061D71C6B0E5}
- *
- *              Alarmsirene 3
- *             	{B5E2AA9D-E2B2-5959-DA99-9C4D37269894}
  */
 
 declare(strict_types=1);
@@ -31,6 +26,7 @@ include_once __DIR__ . '/helper/autoload.php';
 class Alarmsirene3 extends IPSModule
 {
     //Helper
+    use AS3_alarmProtocol;
     use AS3_alarmSiren;
     use AS3_backupRestore;
     use AS3_muteMode;
@@ -97,12 +93,8 @@ class Alarmsirene3 extends IPSModule
                 //$Data[3] = timestamp actual value
                 //$Data[4] = timestamp value changed
                 //$Data[5] = timestamp last value
-                if ($this->CheckMaintenanceMode()) {
-                    return;
-                }
-                //Trigger action
                 if ($Data[1]) {
-                    $scriptText = 'AS3_CheckTrigger(' . $this->InstanceID . ', ' . $SenderID . ');';
+                    $scriptText = 'AS3_CheckTriggerVariable(' . $this->InstanceID . ', ' . $SenderID . ');';
                     IPS_RunScriptText($scriptText);
                 }
                 break;
@@ -117,31 +109,31 @@ class Alarmsirene3 extends IPSModule
         $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (!empty($variables)) {
             foreach ($variables as $variable) {
-                $rowColor = '#C0FFC0'; //light green
+                $rowColor = '#C0FFC0'; # light green
                 $use = $variable->Use;
                 if (!$use) {
                     $rowColor = '';
                 }
                 $id = $variable->ID;
                 if ($id == 0 || @!IPS_ObjectExists($id)) {
-                    $rowColor = '#FFC0C0'; //light red
+                    $rowColor = '#FFC0C0'; # red
                 }
-                $formData['elements'][4]['items'][1]['values'][] = [
-                    'Use'                                              => $use,
-                    'ID'                                               => $id,
-                    'TriggerValueOn'                                   => $variable->TriggerValueOn,
-                    'TriggerValueOff'                                  => $variable->TriggerValueOff,
-                    'rowColor'                                         => $rowColor];
+                $formData['elements'][1]['items'][0]['values'][] = [
+                    'Use'           => $use,
+                    'ID'            => $id,
+                    'TriggerValue'  => $variable->TriggerValue,
+                    'TriggerAction' => $variable->TriggerAction,
+                    'rowColor'      => $rowColor];
             }
         }
         //Registered messages
         $messages = $this->GetMessageList();
         foreach ($messages as $senderID => $messageID) {
             $senderName = 'Objekt #' . $senderID . ' existiert nicht';
-            $rowColor = '#FFC0C0'; //light red
+            $rowColor = '#FFC0C0'; # red
             if (@IPS_ObjectExists($senderID)) {
                 $senderName = IPS_GetName($senderID);
-                $rowColor = '#C0FFC0'; //light green
+                $rowColor = ''; # '#C0FFC0' #light green
             }
             switch ($messageID) {
                 case [10001]:
@@ -156,11 +148,11 @@ class Alarmsirene3 extends IPSModule
                     $messageDescription = 'keine Bezeichnung';
             }
             $formData['actions'][1]['items'][0]['values'][] = [
-                'SenderID'                                              => $senderID,
-                'SenderName'                                            => $senderName,
-                'MessageID'                                             => $messageID,
-                'MessageDescription'                                    => $messageDescription,
-                'rowColor'                                              => $rowColor];
+                'SenderID'              => $senderID,
+                'SenderName'            => $senderName,
+                'MessageID'             => $messageID,
+                'MessageDescription'    => $messageDescription,
+                'rowColor'              => $rowColor];
         }
         //Attribute
         $state = 'Aus';
@@ -212,19 +204,19 @@ class Alarmsirene3 extends IPSModule
         $this->RegisterPropertyBoolean('EnableSignallingAmount', true);
         $this->RegisterPropertyBoolean('EnableResetSignallingAmount', true);
         $this->RegisterPropertyBoolean('EnableMuteMode', true);
+        //Trigger
+        $this->RegisterPropertyString('TriggerVariables', '[]');
         //Alarm siren
+        $this->RegisterPropertyInteger('PreAlarmSiren', 0);
         $this->RegisterPropertyInteger('AlarmSiren', 0);
         $this->RegisterPropertyInteger('AlarmSirenSwitchingDelay', 0);
         //Pre alarm
         $this->RegisterPropertyBoolean('UsePreAlarm', true);
-        $this->RegisterPropertyInteger('PreAlarmSiren', 0);
         //Main alarm
         $this->RegisterPropertyBoolean('UseMainAlarm', true);
         $this->RegisterPropertyInteger('MainAlarmSignallingDelay', 30);
         $this->RegisterPropertyInteger('MainAlarmAcousticSignallingDuration', 180);
         $this->RegisterPropertyInteger('MainAlarmMaximumSignallingAmount', 3);
-        //Trigger
-        $this->RegisterPropertyString('TriggerVariables', '[]');
         // Alarm protocol
         $this->RegisterPropertyInteger('AlarmProtocol', 0);
         //Mute mode
@@ -241,11 +233,18 @@ class Alarmsirene3 extends IPSModule
             IPS_CreateVariableProfile($profile, 1);
         }
         IPS_SetVariableProfileAssociation($profile, 0, 'Reset', 'Repeat', 0xFF0000);
+        //Mute mode
+        $profile = 'AS3.' . $this->InstanceID . '.MuteMode.Reversed';
+        if (!IPS_VariableProfileExists($profile)) {
+            IPS_CreateVariableProfile($profile, 0);
+        }
+        IPS_SetVariableProfileAssociation($profile, 0, 'Aus', 'Speaker', -1);
+        IPS_SetVariableProfileAssociation($profile, 1, 'An', 'Speaker', 0x00FF00);
     }
 
     private function DeleteProfiles(): void
     {
-        $profiles = ['ResetSignallingAmount'];
+        $profiles = ['ResetSignallingAmount', 'MuteMode.Reversed'];
         if (!empty($profiles)) {
             foreach ($profiles as $profile) {
                 $profileName = 'AS3.' . $this->InstanceID . '.' . $profile;
@@ -272,7 +271,8 @@ class Alarmsirene3 extends IPSModule
         $this->RegisterVariableInteger('ResetSignallingAmount', 'Rückstellung', $profile, 50);
         $this->EnableAction('ResetSignallingAmount');
         //Mute mode
-        $this->RegisterVariableBoolean('MuteMode', 'Stummschaltung', '~Switch', 60);
+        $profile = 'AS3.' . $this->InstanceID . '.MuteMode.Reversed';
+        $this->RegisterVariableBoolean('MuteMode', 'Stummschaltung', $profile, 60);
         $this->EnableAction('MuteMode');
     }
 
@@ -366,15 +366,5 @@ class Alarmsirene3 extends IPSModule
                 }
             }
         }
-    }
-
-    private function CheckMuteMode(): bool
-    {
-        $muteMode = boolval($this->GetValue('MuteMode'));
-        if ($muteMode) {
-            $message = 'Abbruch, die Stummschaltung ist aktiv!';
-            $this->SendDebug(__FUNCTION__, $message, 0);
-        }
-        return $muteMode;
     }
 }
