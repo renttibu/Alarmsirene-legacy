@@ -363,22 +363,22 @@
     {
       "code": 101,
       "icon": "active",
-      "caption": "Alarmsirene 1 (Variable) wird erstellt"
+      "caption": "Alarmsirene (Variable) wird erstellt"
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Alarmsirene 1 (Variable) ist aktiv"
+      "caption": "Alarmsirene (Variable) ist aktiv"
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Alarmsirene 1 (Variable) wird gelöscht"
+      "caption": "Alarmsirene (Variable) wird gelöscht"
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Alarmsirene 1 (Variable) ist inaktiv"
+      "caption": "Alarmsirene (Variable) ist inaktiv"
     },
     {
       "code": 200,

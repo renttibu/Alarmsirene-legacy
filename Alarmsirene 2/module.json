@@ -4,7 +4,7 @@
   "type": 3,
   "vendor": "Ulrich Bittner",
   "aliases": [
-    "Alarmsirene 2 (Homematic IP)"
+    "Alarmsirene (Homematic IP)"
   ],
   "url": "https://github.com/ubittner/Alarmsirene",
   "parentRequirements": [],

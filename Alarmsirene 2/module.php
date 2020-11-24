@@ -120,11 +120,11 @@ class Alarmsirene2 extends IPSModule
                     $rowColor = '#FFC0C0'; # red
                 }
                 $formData['elements'][1]['items'][0]['values'][] = [
-                    'Use'                                              => $use,
-                    'ID'                                               => $id,
-                    'TriggerValueOn'                                   => $variable->TriggerValueOn,
-                    'TriggerValueOff'                                  => $variable->TriggerValueOff,
-                    'rowColor'                                         => $rowColor];
+                    'Use'           => $use,
+                    'ID'            => $id,
+                    'TriggerValue'  => $variable->TriggerValue,
+                    'TriggerAction' => $variable->TriggerAction,
+                    'rowColor'      => $rowColor];
             }
         }
         //Registered messages

@@ -365,22 +365,22 @@
     {
       "code": 101,
       "icon": "active",
-      "caption": "Alarmsirene 3 (HomeMatic) wird erstellt"
+      "caption": "Alarmsirene (HomeMatic) wird erstellt"
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Alarmsirene 3 (HomeMatic) ist aktiv"
+      "caption": "Alarmsirene (HomeMatic) ist aktiv"
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Alarmsirene 3 (HomeMatic) wird gelöscht"
+      "caption": "Alarmsirene (HomeMatic) wird gelöscht"
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Alarmsirene 3 (HomeMatic) ist inaktiv"
+      "caption": "Alarmsirene (HomeMatic) ist inaktiv"
     },
     {
       "code": 200,

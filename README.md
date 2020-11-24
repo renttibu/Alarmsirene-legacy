@@ -23,6 +23,6 @@ Folgende Module beinhaltet das Alarmsirene Repository:
     
 - __Alarmsirene 3__ ([Dokumentation](Alarmsirene%203))  
     Dieses Modul schaltet eine HomeMatic Alarmsirene.  
-        
+    
     Unterstütze Geräte:
     * HM-Sec-Sir-WM
