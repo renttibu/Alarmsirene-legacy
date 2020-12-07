@@ -70,6 +70,33 @@
               }
             },
             {
+              "caption": "Auslöser",
+              "name": "TriggerType",
+              "width": "230px",
+              "add": 2,
+              "edit": {
+                "type": "Select",
+                "options": [
+                  {
+                    "caption": "Bei Änderung",
+                    "value": 0
+                  },
+                  {
+                    "caption": "Bei Aktualisierung",
+                    "value": 1
+                  },
+                  {
+                    "caption": "Bei bestimmtem Wert (einmalig)",
+                    "value": 2
+                  },
+                  {
+                    "caption": "Bei bestimmtem Wert (mehrmalig)",
+                    "value": 3
+                  }
+                ]
+              }
+            },
+            {
               "caption": "Auslösender Wert",
               "name": "TriggerValue",
               "width": "200px",

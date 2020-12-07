@@ -93,10 +93,12 @@ class Alarmsirene1 extends IPSModule
                 //$Data[3] = timestamp actual value
                 //$Data[4] = timestamp value changed
                 //$Data[5] = timestamp last value
+                $valueChanged = 'false';
                 if ($Data[1]) {
-                    $scriptText = 'AS1_CheckTriggerVariable(' . $this->InstanceID . ', ' . $SenderID . ');';
-                    IPS_RunScriptText($scriptText);
+                    $valueChanged = 'true';
                 }
+                $scriptText = 'AS1_CheckTriggerVariable(' . $this->InstanceID . ', ' . $SenderID . ', ' . $valueChanged . ');';
+                IPS_RunScriptText($scriptText);
                 break;
 
         }

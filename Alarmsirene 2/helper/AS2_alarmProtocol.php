@@ -38,7 +38,7 @@ trait AS2_alarmProtocol
             return;
         }
         $id = $this->ReadPropertyInteger('AlarmProtocol');
-        if ($id == 0 && !@IPS_ObjectExists($id)) {
+        if ($id == 0 || !@IPS_ObjectExists($id)) {
             return;
         }
         $timestamp = date('d.m.Y, H:i:s');

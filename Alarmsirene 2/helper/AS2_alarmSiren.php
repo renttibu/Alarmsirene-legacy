@@ -461,13 +461,15 @@ trait AS2_alarmSiren
      *
      * @param int $SenderID
      *
+     * @param bool $ValueChanged
+     *
      * @return bool
      * false    = an error occurred
      * true     = successful
      *
      * @throws Exception
      */
-    public function CheckTriggerVariable(int $SenderID): bool
+    public function CheckTriggerVariable(int $SenderID, bool $ValueChanged): bool
     {
         $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
         if (!$this->CheckAlarmSiren()) {
@@ -481,11 +483,69 @@ trait AS2_alarmSiren
                 $id = $variable->ID;
                 if ($SenderID == $id) {
                     if ($variable->Use) {
-                        $actualValue = intval(GetValue($id));
-                        $this->SendDebug(__FUNCTION__, 'Aktueller Wert: ' . $actualValue, 0);
-                        $triggerValue = $variable->TriggerValue;
-                        $this->SendDebug(__FUNCTION__, 'Auslösender Wert: ' . $triggerValue, 0);
-                        if ($actualValue == $triggerValue) {
+                        $execute = false;
+                        $triggerType = $variable->TriggerType;
+                        switch ($triggerType) {
+                            case 0:
+                                $triggerText = 'Bei Änderung';
+                                break;
+
+                            case 1:
+                                $triggerText = 'Bei Aktualisierung';
+                                break;
+
+                            case 2:
+                                $triggerText = 'Bei bestimmtem Wert (einmalig)';
+                                break;
+
+                            case 3:
+                                $triggerText = 'Bei bestimmtem Wert (mehrmalig)';
+                                break;
+
+                            default:
+                                $triggerText = 'unbekannt';
+
+                        }
+                        $this->SendDebug(__FUNCTION__, 'Auslöser: ' . $triggerText, 0);
+                        switch ($triggerType) {
+                            case 0: # value changed
+                                if ($ValueChanged) {
+                                    $this->SendDebug(__FUNCTION__, 'Wert hat sich geändert', 0);
+                                    $execute = true;
+                                }
+                                break;
+
+                            case 1: # value updated
+                                $this->SendDebug(__FUNCTION__, 'Wert hat sich aktualisiert', 0);
+                                $execute = true;
+                                break;
+
+                            case 2: # defined value, execution once
+                                $actualValue = intval(GetValue($id));
+                                $this->SendDebug(__FUNCTION__, 'Aktueller Wert: ' . $actualValue, 0);
+                                $triggerValue = $variable->TriggerValue;
+                                $this->SendDebug(__FUNCTION__, 'Auslösender Wert: ' . $triggerValue, 0);
+                                if ($actualValue == $triggerValue && $ValueChanged) {
+                                    $execute = true;
+                                } else {
+                                    $this->SendDebug(__FUNCTION__, 'Keine Übereinstimmung!', 0);
+                                }
+                                break;
+
+                            case 3: # defined value, multiple execution
+                                $actualValue = intval(GetValue($id));
+                                $this->SendDebug(__FUNCTION__, 'Aktueller Wert: ' . $actualValue, 0);
+                                $triggerValue = $variable->TriggerValue;
+                                $this->SendDebug(__FUNCTION__, 'Auslösender Wert: ' . $triggerValue, 0);
+                                if ($actualValue == $triggerValue) {
+                                    $execute = true;
+                                } else {
+                                    $this->SendDebug(__FUNCTION__, 'Keine Übereinstimmung!', 0);
+                                }
+                                break;
+
+                        }
+                        if ($execute) {
                             $triggerAction = $variable->TriggerAction;
                             switch ($triggerAction) {
                                 case 0:
