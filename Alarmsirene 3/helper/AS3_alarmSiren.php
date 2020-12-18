@@ -357,74 +357,150 @@ trait AS3_alarmSiren
         $triggerVariables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (!empty($triggerVariables)) {
             foreach ($triggerVariables as $variable) {
-                $id = $variable->ID;
+                $id = $variable->TriggeringVariable;
                 if ($SenderID == $id) {
                     if ($variable->Use) {
+                        $this->SendDebug(__FUNCTION__, 'Variable ' . $id . ' ist aktiv', 0);
                         $execute = false;
-                        $triggerType = $variable->TriggerType;
-                        switch ($triggerType) {
-                            case 0:
-                                $triggerText = 'Bei Änderung';
-                                break;
-
-                            case 1:
-                                $triggerText = 'Bei Aktualisierung';
-                                break;
-
-                            case 2:
-                                $triggerText = 'Bei bestimmtem Wert (einmalig)';
-                                break;
-
-                            case 3:
-                                $triggerText = 'Bei bestimmtem Wert (mehrmalig)';
-                                break;
-
-                            default:
-                                $triggerText = 'unbekannt';
-
-                        }
-                        $this->SendDebug(__FUNCTION__, 'Auslöser: ' . $triggerText, 0);
-                        switch ($triggerType) {
-                            case 0: # value changed
+                        $type = IPS_GetVariable($id)['VariableType'];
+                        $trigger = $variable->Trigger;
+                        $value = $variable->Value;
+                        switch ($trigger) {
+                            case 0: #on change (bool, integer, float, string)
                                 if ($ValueChanged) {
-                                    $this->SendDebug(__FUNCTION__, 'Wert hat sich geändert', 0);
                                     $execute = true;
                                 }
                                 break;
 
-                            case 1: # value updated
-                                $this->SendDebug(__FUNCTION__, 'Wert hat sich aktualisiert', 0);
+                            case 1: #on update (bool, integer, float, string)
                                 $execute = true;
                                 break;
 
-                            case 2: # defined value, execution once
-                                $actualValue = intval(GetValue($id));
-                                $this->SendDebug(__FUNCTION__, 'Aktueller Wert: ' . $actualValue, 0);
-                                $triggerValue = $variable->TriggerValue;
-                                $this->SendDebug(__FUNCTION__, 'Auslösender Wert: ' . $triggerValue, 0);
-                                if ($actualValue == $triggerValue && $ValueChanged) {
-                                    $execute = true;
-                                } else {
-                                    $this->SendDebug(__FUNCTION__, 'Keine Übereinstimmung!', 0);
+                            case 2: #on limit drop (integer, float)
+                                switch ($type) {
+                                    case 1: #integer
+                                        $actualValue = GetValueInteger($id);
+                                        $triggerValue = intval($value);
+                                        if ($actualValue < $triggerValue) {
+                                            $execute = true;
+                                        }
+                                        break;
+
+                                    case 2: #float
+                                        $actualValue = GetValueFloat($id);
+                                        $triggerValue = floatval(str_replace(',', '.', $value));
+                                        if ($actualValue < $triggerValue) {
+                                            $execute = true;
+                                        }
+                                        break;
+
                                 }
                                 break;
 
-                            case 3: # defined value, multiple execution
-                                $actualValue = intval(GetValue($id));
-                                $this->SendDebug(__FUNCTION__, 'Aktueller Wert: ' . $actualValue, 0);
-                                $triggerValue = $variable->TriggerValue;
-                                $this->SendDebug(__FUNCTION__, 'Auslösender Wert: ' . $triggerValue, 0);
-                                if ($actualValue == $triggerValue) {
-                                    $execute = true;
-                                } else {
-                                    $this->SendDebug(__FUNCTION__, 'Keine Übereinstimmung!', 0);
+                            case 3: #on limit exceed (integer, float)
+                                switch ($type) {
+                                    case 1: #integer
+                                        $actualValue = GetValueInteger($id);
+                                        $triggerValue = intval($value);
+                                        if ($actualValue > $triggerValue) {
+                                            $execute = true;
+                                        }
+                                        break;
+
+                                    case 2: #float
+                                        $actualValue = GetValueFloat($id);
+                                        $triggerValue = floatval(str_replace(',', '.', $value));
+                                        if ($actualValue > $triggerValue) {
+                                            $execute = true;
+                                        }
+                                        break;
+
                                 }
                                 break;
 
+                            case 4: #on specific value (bool, integer, float, string)
+                                switch ($type) {
+                                    case 0: #bool
+                                        $actualValue = GetValueBoolean($id);
+                                        if ($value == 'false') {
+                                            $value = '0';
+                                        }
+                                        $triggerValue = boolval($value);
+                                        if ($actualValue == $triggerValue) {
+                                            $condition = $variable->Condition;
+                                            switch ($condition) {
+                                                case 1: #trigger once
+                                                    if ($ValueChanged) {
+                                                        $execute = true;
+                                                    }
+                                                    break;
+
+                                                case 2: #trigger every time
+                                                    $execute = true;
+                                            }
+                                        }
+                                        break;
+
+                                    case 1: #integer
+                                        $actualValue = GetValueInteger($id);
+                                        $triggerValue = intval($value);
+                                        if ($actualValue == $triggerValue) {
+                                            $condition = $variable->Condition;
+                                            switch ($condition) {
+                                                case 1: #trigger once
+                                                    if ($ValueChanged) {
+                                                        $execute = true;
+                                                    }
+                                                    break;
+
+                                                case 2: #trigger every time
+                                                    $execute = true;
+                                            }
+                                        }
+                                        break;
+
+                                    case 2: #float
+                                        $actualValue = GetValueFloat($id);
+                                        $triggerValue = floatval(str_replace(',', '.', $value));
+                                        if ($actualValue == $triggerValue) {
+                                            $condition = $variable->Condition;
+                                            switch ($condition) {
+                                                case 1: #trigger once
+                                                    if ($ValueChanged) {
+                                                        $execute = true;
+                                                    }
+                                                    break;
+
+                                                case 2: #trigger every time
+                                                    $execute = true;
+                                            }
+                                        }
+                                        break;
+
+                                    case 3: #string
+                                        $actualValue = GetValueString($id);
+                                        $triggerValue = (string) $value;
+                                        if ($actualValue == $triggerValue) {
+                                            $condition = $variable->Condition;
+                                            switch ($condition) {
+                                                case 1: #trigger once
+                                                    if ($ValueChanged) {
+                                                        $execute = true;
+                                                    }
+                                                    break;
+
+                                                case 2: #trigger every time
+                                                    $execute = true;
+                                            }
+                                        }
+                                        break;
+
+                                }
+                                break;
                         }
                         if ($execute) {
-                            $triggerAction = $variable->TriggerAction;
-                            switch ($triggerAction) {
+                            $action = $variable->Action;
+                            switch ($action) {
                                 case 0:
                                     $this->SendDebug(__FUNCTION__, 'Aktion: Alarmsirene ausschalten', 0);
                                     $result = $this->ToggleAlarmSiren(false);

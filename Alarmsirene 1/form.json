@@ -46,7 +46,7 @@
           "add": true,
           "delete": true,
           "sort": {
-            "column": "ID",
+            "column": "TriggeringVariable",
             "direction": "ascending"
           },
           "columns": [
@@ -61,19 +61,19 @@
             },
             {
               "caption": "Variable",
-              "name": "ID",
-              "width": "600px",
+              "name": "TriggeringVariable",
+              "width": "300px",
               "add": 0,
-              "onClick": "echo 'ID: ' . $TriggerVariables['ID'];",
+              "onClick": "echo 'ID ' . $TriggeringVariables['TriggeringVariable'];",
               "edit": {
                 "type": "SelectVariable"
               }
             },
             {
               "caption": "Auslöser",
-              "name": "TriggerType",
-              "width": "230px",
-              "add": 2,
+              "name": "Trigger",
+              "width": "180px",
+              "add": 0,
               "edit": {
                 "type": "Select",
                 "options": [
@@ -86,48 +86,57 @@
                     "value": 1
                   },
                   {
-                    "caption": "Bei bestimmtem Wert (einmalig)",
+                    "caption": "Bei Grenzunterschreitung",
                     "value": 2
                   },
                   {
-                    "caption": "Bei bestimmtem Wert (mehrmalig)",
+                    "caption": "Bei Grenzüberschreitung",
                     "value": 3
+                  },
+                  {
+                    "caption": "Bei bestimmtem Wert",
+                    "value": 4
                   }
                 ]
               }
             },
             {
-              "caption": "Auslösender Wert",
-              "name": "TriggerValue",
-              "width": "200px",
-              "add": 1,
+              "caption": "Wert",
+              "name": "Value",
+              "width": "100px",
+              "add": "",
+              "edit": {
+                "type": "ValidationTextBox"
+              }
+            },
+            {
+              "caption": "Bedingung",
+              "name": "Condition",
+              "width": "170px",
+              "add": 0,
               "edit": {
                 "type": "Select",
                 "options": [
                   {
-                    "caption": "0 | false",
+                    "caption": "Keine Bedingung",
                     "value": 0
                   },
                   {
-                    "caption": "1 | true",
+                    "caption": "Einmalige Auslösung",
                     "value": 1
                   },
                   {
-                    "caption": "2",
+                    "caption": "Mehrmalige Auslösung",
                     "value": 2
-                  },
-                  {
-                    "caption": "3",
-                    "value": 3
                   }
                 ]
               }
             },
             {
               "caption": "Aktion",
-              "name": "TriggerAction",
+              "name": "Action",
               "width": "200px",
-              "add": 1,
+              "add": 0,
               "edit": {
                 "type": "Select",
                 "options": [
