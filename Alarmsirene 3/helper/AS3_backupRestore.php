@@ -1,23 +1,14 @@
 <?php
 
+/*
+ * @author      Ulrich Bittner
+ * @copyright   (c) 2020, 2021
+ * @license    	CC BY-NC-SA 4.0
+ * @see         https://github.com/ubittner/Alarmsirene/tree/master/Alarmsirene%203
+ */
+
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnused */
-
-/*
- * @module      Alarmsirene 3 (HomeMatic)
- *
- * @prefix      AS3
- *
- * @file        AS3_backupRestore.php
- *
- * @author      Ulrich Bittner
- * @copyright   (c) 2020
- * @license    	CC BY-NC-SA 4.0
- *              https://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- * @see         https://github.com/ubittner/Alarmsirene
- *
- */
 
 declare(strict_types=1);
 
@@ -25,11 +16,6 @@ trait AS3_backupRestore
 {
     #################### Backup
 
-    /**
-     * Creates a backup of the actual configuration into a script.
-     *
-     * @param int $BackupCategory
-     */
     public function CreateBackup(int $BackupCategory): void
     {
         if (IPS_GetInstance($this->InstanceID)['InstanceStatus'] == 102) {
@@ -47,11 +33,6 @@ trait AS3_backupRestore
 
     #################### Restore
 
-    /**
-     * Restores a configuration form selected script.
-     *
-     * @param int $ConfigurationScript
-     */
     public function RestoreConfiguration(int $ConfigurationScript): void
     {
         if ($ConfigurationScript != 0 && IPS_ObjectExists($ConfigurationScript)) {

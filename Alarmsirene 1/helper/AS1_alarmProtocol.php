@@ -1,23 +1,15 @@
 <?php
 
+/*
+ * @author      Ulrich Bittner
+ * @copyright   (c) 2020, 2021
+ * @license    	CC BY-NC-SA 4.0
+ * @see         https://github.com/ubittner/Alarmsirene/tree/master/Alarmsirene%201
+ */
+
 /** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection PhpUndefinedFunctionInspection */
-
-/*
- * @module      Alarmsirene 1 (Variable)
- *
- * @prefix      AS1
- *
- * @file        AS1_alarmProtocol.php
- *
- * @author      Ulrich Bittner
- * @copyright   (c) 2020
- * @license    	CC BY-NC-SA 4.0
- *              https://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- * @see         https://github.com/ubittner/Alarmsirene
- *
- */
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -25,14 +17,9 @@ trait AS1_alarmProtocol
 {
     #################### Private
 
-    /**
-     * Updates the alarm protocol.
-     *
-     * @param string $Message
-     */
     private function UpdateAlarmProtocol(string $Message): void
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt (' . microtime(true) . ')', 0);
+        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
         if ($this->CheckMaintenanceMode()) {
             return;
         }
