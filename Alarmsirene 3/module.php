@@ -273,7 +273,7 @@ class Alarmsirene3 extends IPSModule # HomeMatic
                 break;
 
             case 'ResetSignallingAmount':
-                $this->SetValue('SignallingAmount', 0);
+                $this->ResetSignallingAmount();
                 break;
 
             case 'MuteMode':

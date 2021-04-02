@@ -332,7 +332,7 @@ class Alarmsirene2 extends IPSModule # Homematic IP
                 break;
 
             case 'ResetSignallingAmount':
-                $this->SetValue('SignallingAmount', 0);
+                $this->ResetSignallingAmount();
                 break;
 
             case 'MuteMode':

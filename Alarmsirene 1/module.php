@@ -275,7 +275,7 @@ class Alarmsirene1 extends IPSModule # Variable
                 break;
 
             case 'ResetSignallingAmount':
-                $this->SetValue('SignallingAmount', 0);
+                $this->ResetSignallingAmount();
                 break;
 
             case 'MuteMode':

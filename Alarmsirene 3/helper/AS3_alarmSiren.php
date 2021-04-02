@@ -549,6 +549,11 @@ trait AS3_alarmSiren
         return $result;
     }
 
+    public function ResetSignallingAmount(): void
+    {
+        $this->SetValue('SignallingAmount', 0);
+    }
+
     #################### Private
 
     private function CheckAlarmSiren(): bool
