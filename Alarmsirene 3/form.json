@@ -133,7 +133,7 @@
               "name": "ID",
               "width": "600px",
               "add": 0,
-              "onClick": "echo 'ID ' . $TriggeringVariables['ID'];",
+              "onClick": "echo 'ID ' . $TriggerVariables['ID'];",
               "edit": {
                 "type": "SelectVariable"
               }
