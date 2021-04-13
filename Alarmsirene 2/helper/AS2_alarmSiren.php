@@ -222,13 +222,12 @@ trait AS2_alarmSiren
         if ($result) {
             $text = 'Der Voralarm wurde eingeschaltet';
             $this->SendDebug(__FUNCTION__, $text, 0);
-            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         } else {
             $text = 'Fehler, der Voralarm konnte nicht eingeschaltet werden!';
             $this->SendDebug(__FUNCTION__, $text, 0);
             $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_ERROR);
-            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         }
+        $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         return $result;
     }
 
@@ -308,15 +307,14 @@ trait AS2_alarmSiren
             }
             $text = 'Die Alarmsirene wird in ' . $duration . ' ' . $unit . ' ausgeschaltet';
             $this->SendDebug(__FUNCTION__, $text, 0);
-            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         } else {
             // Revert on failure
             $this->SetValue('AlarmSiren', false);
             $text = 'Fehler, die Alarmsirene konnte nicht eingeschaltet werden!';
             $this->SendDebug(__FUNCTION__, $text, 0);
             $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_ERROR);
-            $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         }
+        $this->UpdateAlarmProtocol($text . '. (ID ' . $id . ')');
         $this->SetTimerInterval('DeactivateAcousticSignal', $duration * 1000);
         return $result;
     }
@@ -405,7 +403,7 @@ trait AS2_alarmSiren
             $execute = false;
             $id = $var->ID;
             if ($id != 0 && @IPS_ObjectExists($id)) {
-                if ($var->Use) {
+                if ($var->Use && $id == $SenderID) {
                     $this->SendDebug(__FUNCTION__, 'Variable: ' . $id . ' ist aktiviert', 0);
                     $type = IPS_GetVariable($id)['VariableType'];
                     $value = $var->Value;
