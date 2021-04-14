@@ -30,10 +30,8 @@ trait AS2_alarmProtocol
         $timestamp = date('d.m.Y, H:i:s');
         $logText = $timestamp . ', ' . $Message;
         $logType = 0;
-        @AP_UpdateMessages($id, $logText, $logType);
-        /*
+        //@AP_UpdateMessages($id, $logText, $logType);
         $protocol = 'AP_UpdateMessages(' . $id . ', "' . $logText . '", ' . $logType . ');';
         @IPS_RunScriptText($protocol);
-         */
     }
 }
