@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 trait AS2_alarmSiren
 {
-
     /*
      * Die HomeMatic IP Alarmsirene muss nach einem bestimmten Schema angesteuert werden.
      * Bitte beachten Sie dabei auch die richtige Reihenfolge.
