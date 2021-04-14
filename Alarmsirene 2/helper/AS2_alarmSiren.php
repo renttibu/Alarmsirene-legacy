@@ -90,23 +90,23 @@ trait AS2_alarmSiren
             $this->SendDebug(__FUNCTION__, 'DURATION_UNIT: 0, RESULT: ' . json_encode($parameter1), 0);
             $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
             $this->SendDebug(__FUNCTION__, 'DURATION_VALUE: 3, RESULT: ' . json_encode($parameter2), 0);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-            $this->SendDebug(__FUNCTION__, 'ACOUSTIC_ALARM_SELECTION: 0, RESULT: ' . json_encode($parameter3), 0);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
-            $this->SendDebug(__FUNCTION__, 'OPTICAL_ALARM_SELECTION: 0, RESULT: ' . json_encode($parameter4), 0);
+            $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
+            $this->SendDebug(__FUNCTION__, 'OPTICAL_ALARM_SELECTION: 0, RESULT: ' . json_encode($parameter3), 0);
+            $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
+            $this->SendDebug(__FUNCTION__, 'ACOUSTIC_ALARM_SELECTION: 0, RESULT: ' . json_encode($parameter4), 0);
             $result = true;
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 IPS_Sleep(self::DELAY_MILLISECONDS);
                 $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
                 $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
-                $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-                $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
+                $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
+                $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
                 if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                     IPS_Sleep(self::DELAY_MILLISECONDS * 2);
                     $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
                     $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', 3);
-                    $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-                    $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
+                    $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', 0);
+                    $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
                     if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                         $result = false;
                     }
@@ -208,15 +208,19 @@ trait AS2_alarmSiren
         $acousticSignal = $this->ReadPropertyInteger('PreAlarmAcousticSignal');
         $opticalSignal = $this->ReadPropertyInteger('PreAlarmOpticalSignal');
         $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
+        $this->SendDebug(__FUNCTION__, 'DURATION_UNIT: 0, RESULT: ' . json_encode($parameter1), 0);
         $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-        $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
-        $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+        $this->SendDebug(__FUNCTION__, 'DURATION_VALUE: ' . $duration . ', RESULT: ' . json_encode($parameter2), 0);
+        $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+        $this->SendDebug(__FUNCTION__, 'OPTICAL_ALARM_SELECTION: ' . $opticalSignal . ', RESULT: ' . json_encode($parameter3), 0);
+        $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
+        $this->SendDebug(__FUNCTION__, 'ACOUSTIC_ALARM_SELECTION: ' . $acousticSignal . ', RESULT: ' . json_encode($parameter4), 0);
         if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
             IPS_Sleep(self::DELAY_MILLISECONDS);
             $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
             $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+            $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+            $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 $result = false;
             }
@@ -283,15 +287,19 @@ trait AS2_alarmSiren
         $opticalSignal = $this->GetValue('OpticalSignal');
         $id = $this->ReadPropertyInteger('AlarmSiren');
         $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
+        $this->SendDebug(__FUNCTION__, 'DURATION_UNIT: 0, RESULT: ' . json_encode($parameter1), 0);
         $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-        $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
-        $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+        $this->SendDebug(__FUNCTION__, 'DURATION_VALUE: ' . $duration . ', RESULT: ' . json_encode($parameter2), 0);
+        $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+        $this->SendDebug(__FUNCTION__, 'OPTICAL_ALARM_SELECTION: ' . $opticalSignal . ', RESULT: ' . json_encode($parameter3), 0);
+        $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
+        $this->SendDebug(__FUNCTION__, 'ACOUSTIC_ALARM_SELECTION: ' . $acousticSignal . ', RESULT: ' . json_encode($parameter4), 0);
         if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
             IPS_Sleep(self::DELAY_MILLISECONDS);
             $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
             $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+            $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+            $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', $acousticSignal);
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 $result = false;
             }
@@ -348,21 +356,25 @@ trait AS2_alarmSiren
             }
             $id = $this->ReadPropertyInteger('AlarmSiren');
             $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
+            $this->SendDebug(__FUNCTION__, 'DURATION_UNIT: 0, RESULT: ' . json_encode($parameter1), 0);
             $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-            $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-            $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+            $this->SendDebug(__FUNCTION__, 'DURATION_VALUE: ' . $duration . ', RESULT: ' . json_encode($parameter2), 0);
+            $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+            $this->SendDebug(__FUNCTION__, 'OPTICAL_ALARM_SELECTION: ' . $opticalSignal . ', RESULT: ' . json_encode($parameter3), 0);
+            $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
+            $this->SendDebug(__FUNCTION__, 'ACOUSTIC_ALARM_SELECTION: 0, RESULT: ' . json_encode($parameter4), 0);
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 IPS_Sleep(self::DELAY_MILLISECONDS);
                 $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
                 $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-                $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-                $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+                $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+                $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
                 if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                     IPS_Sleep(self::DELAY_MILLISECONDS);
                     $parameter1 = @HM_WriteValueInteger($id, 'DURATION_UNIT', 0);
                     $parameter2 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $duration);
-                    $parameter3 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
-                    $parameter4 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+                    $parameter3 = @HM_WriteValueInteger($id, 'OPTICAL_ALARM_SELECTION', $opticalSignal);
+                    $parameter4 = @HM_WriteValueInteger($id, 'ACOUSTIC_ALARM_SELECTION', 0);
                     if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                         $result = false;
                     }
