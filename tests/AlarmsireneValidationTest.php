@@ -25,4 +25,9 @@ class AlarmsireneValidationTest extends TestCaseSymconValidation
     {
         $this->validateModule(__DIR__ . '/../Alarmsirene 3');
     }
+
+    public function testValidateHmIPASIRModule(): void
+    {
+        $this->validateModule(__DIR__ . '/../HmIP-ASIR');
+    }
 }

@@ -1,0 +1,14 @@
+{
+  "id": "{10B99FF2-EAC7-F4C6-B8D4-BC00FCB1DD21}",
+  "name": "Alarmsirene HmIPASIR",
+  "type": 3,
+  "vendor": "Ulrich Bittner",
+  "aliases": [
+    "Alarmsirene HmIP-ASIR"
+  ],
+  "url": "https://github.com/ubittner/Alarmsirene/tree/master/HmIP-ASIR",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "HMIPASIR"
+}

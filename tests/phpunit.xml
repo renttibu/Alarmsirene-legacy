@@ -8,6 +8,7 @@
             <directory suffix=".php">../Alarmsirene 1</directory>
             <directory suffix=".php">../Alarmsirene 2</directory>
             <directory suffix=".php">../Alarmsirene 3</directory>
+            <directory suffix=".php">../HmIP-ASIR</directory>
         </whitelist>
     </filter>
 </phpunit>
