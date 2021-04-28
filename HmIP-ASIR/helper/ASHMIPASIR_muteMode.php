@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-trait AS_HMIPASIR_muteMode
+trait ASHMIPASIR_muteMode
 {
     public function ToggleMuteMode(bool $State): void
     {

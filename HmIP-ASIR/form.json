@@ -603,7 +603,7 @@
         {
           "type": "Button",
           "caption": "Neu einlesen",
-          "onClick": "AS_HMIPASIR_ReloadConfiguration($id);"
+          "onClick": "ASHMIPASIR_ReloadConfiguration($id);"
         },
         {
           "type": "RowLayout",
@@ -621,7 +621,7 @@
             {
               "type": "Button",
               "caption": "Sichern",
-              "onClick": "AS_HMIPASIR_CreateBackup($id, $BackupCategory);"
+              "onClick": "ASHMIPASIR_CreateBackup($id, $BackupCategory);"
             }
           ]
         },
@@ -647,7 +647,7 @@
                   {
                     "type": "Button",
                     "caption": "Wiederherstellen",
-                    "onClick": "AS_HMIPASIR_RestoreConfiguration($id, $ConfigurationScript);"
+                    "onClick": "ASHMIPASIR_RestoreConfiguration($id, $ConfigurationScript);"
                   }
                 ]
               }
@@ -707,7 +707,7 @@
         {
           "type": "Button",
           "caption": "Panikalarm auslösen",
-          "onClick": "AS_HMIPASIR_ExecuteMainAlarm($id, true);"
+          "onClick": "ASHMIPASIR_ExecuteMainAlarm($id, true);"
         }
       ]
     }

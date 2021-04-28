@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-trait AS_HMIPASIR_alarmProtocol
+trait ASHMIPASIR_alarmProtocol
 {
     private function UpdateAlarmProtocol(string $Message): void
     {

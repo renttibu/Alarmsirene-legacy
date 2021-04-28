@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-trait AS_HMIPASIR_backupRestore
+trait ASHMIPASIR_backupRestore
 {
     public function CreateBackup(int $BackupCategory): void
     {

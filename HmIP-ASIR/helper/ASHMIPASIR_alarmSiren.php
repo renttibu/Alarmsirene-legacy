@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-trait AS_HMIPASIR_alarmSiren
+trait ASHMIPASIR_alarmSiren
 {
     public function ResetSignallingAmount(): void
     {
