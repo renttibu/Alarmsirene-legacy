@@ -17,11 +17,11 @@ include_once __DIR__ . '/helper/autoload.php';
 class AlarmsireneHmIPASIR extends IPSModule
 {
     // Helper
-    use HMIPASIR_alarmProtocol;
-    use HMIPASIR_alarmSiren;
-    use HMIPASIR_backupRestore;
-    use HMIPASIR_muteMode;
-    use HMIPASIR_triggerVariable;
+    use AS_HMIPASIR_alarmProtocol;
+    use AS_HMIPASIR_alarmSiren;
+    use AS_HMIPASIR_backupRestore;
+    use AS_HMIPASIR_muteMode;
+    use AS_HMIPASIR_triggerVariable;
 
     // Constants
     private const DELAY_MILLISECONDS = 250;
@@ -82,7 +82,7 @@ class AlarmsireneHmIPASIR extends IPSModule
             IPS_SetIcon(@$this->GetIDForIdent('AlarmSiren'), 'Alert');
         }
         // Status
-        $profile = 'HMIPASIR.' . $this->InstanceID . '.Status';
+        $profile = 'AS_HMIPASIR.' . $this->InstanceID . '.Status';
         if (!IPS_VariableProfileExists($profile)) {
             IPS_CreateVariableProfile($profile, 1);
             IPS_SetVariableProfileIcon($profile, 'Speaker');
@@ -99,7 +99,7 @@ class AlarmsireneHmIPASIR extends IPSModule
             IPS_SetIcon(@$this->GetIDForIdent('SignallingAmount'), 'Warning');
         }
         // Reset signalling amount
-        $profile = 'HMIPASIR.' . $this->InstanceID . '.ResetSignallingAmount';
+        $profile = 'AS_HMIPASIR.' . $this->InstanceID . '.ResetSignallingAmount';
         if (!IPS_VariableProfileExists($profile)) {
             IPS_CreateVariableProfile($profile, 1);
         }
@@ -107,7 +107,7 @@ class AlarmsireneHmIPASIR extends IPSModule
         $this->RegisterVariableInteger('ResetSignallingAmount', 'Rückstellung', $profile, 40);
         $this->EnableAction('ResetSignallingAmount');
         // Mute mode
-        $profile = 'HMIPASIR.' . $this->InstanceID . '.MuteMode.Reversed';
+        $profile = 'AS_HMIPASIR.' . $this->InstanceID . '.MuteMode.Reversed';
         if (!IPS_VariableProfileExists($profile)) {
             IPS_CreateVariableProfile($profile, 0);
         }
@@ -117,12 +117,12 @@ class AlarmsireneHmIPASIR extends IPSModule
         $this->EnableAction('MuteMode');
 
         // Timers
-        $this->RegisterTimer('ExecuteMainAlarm', 0, 'HMIPASIR_ExecuteMainAlarm(' . $this->InstanceID . ', false);');
-        $this->RegisterTimer('ExecutePostAlarm', 0, 'HMIPASIR_ExecutePostAlarm(' . $this->InstanceID . ');');
-        $this->RegisterTimer('DeactivateAlarmSiren', 0, 'HMIPASIR_ToggleAlarmSiren(' . $this->InstanceID . ', false);');
-        $this->RegisterTimer('ResetSignallingAmount', 0, 'HMIPASIR_ResetSignallingAmount(' . $this->InstanceID . ');');
-        $this->RegisterTimer('StartMuteMode', 0, 'HMIPASIR_StartMuteMode(' . $this->InstanceID . ');');
-        $this->RegisterTimer('StopMuteMode', 0, 'HMIPASIR_StopMuteMode(' . $this->InstanceID . ',);');
+        $this->RegisterTimer('ExecuteMainAlarm', 0, 'AS_HMIPASIR_ExecuteMainAlarm(' . $this->InstanceID . ', false);');
+        $this->RegisterTimer('ExecutePostAlarm', 0, 'AS_HMIPASIR_ExecutePostAlarm(' . $this->InstanceID . ');');
+        $this->RegisterTimer('DeactivateAlarmSiren', 0, 'AS_HMIPASIR_ToggleAlarmSiren(' . $this->InstanceID . ', false);');
+        $this->RegisterTimer('ResetSignallingAmount', 0, 'AS_HMIPASIR_ResetSignallingAmount(' . $this->InstanceID . ');');
+        $this->RegisterTimer('StartMuteMode', 0, 'AS_HMIPASIR_StartMuteMode(' . $this->InstanceID . ');');
+        $this->RegisterTimer('StopMuteMode', 0, 'AS_HMIPASIR_StopMuteMode(' . $this->InstanceID . ',);');
     }
 
     public function ApplyChanges()
@@ -174,7 +174,7 @@ class AlarmsireneHmIPASIR extends IPSModule
         $profiles = ['Status', 'ResetSignallingAmount', 'MuteMode.Reversed'];
         if (!empty($profiles)) {
             foreach ($profiles as $profile) {
-                $profileName = 'HMIPASIR.' . $this->InstanceID . '.' . $profile;
+                $profileName = 'AS_HMIPASIR.' . $this->InstanceID . '.' . $profile;
                 if (IPS_VariableProfileExists($profileName)) {
                     IPS_DeleteVariableProfile($profileName);
                 }
@@ -209,7 +209,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 if ($Data[1]) {
                     $valueChanged = 'true';
                 }
-                $scriptText = 'HMIPASIR_CheckTriggerVariable(' . $this->InstanceID . ', ' . $SenderID . ', ' . $valueChanged . ');';
+                $scriptText = 'AS_HMIPASIR_CheckTriggerVariable(' . $this->InstanceID . ', ' . $SenderID . ', ' . $valueChanged . ');';
                 @IPS_RunScriptText($scriptText);
                 break;
 

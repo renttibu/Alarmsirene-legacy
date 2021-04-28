@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-trait HMIPASIR_backupRestore
+trait AS_HMIPASIR_backupRestore
 {
     public function CreateBackup(int $BackupCategory): void
     {

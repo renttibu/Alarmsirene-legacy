@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-trait HMIPASIR_triggerVariable
+trait AS_HMIPASIR_triggerVariable
 {
     public function CheckTriggerVariable(int $SenderID, bool $ValueChanged): bool
     {
