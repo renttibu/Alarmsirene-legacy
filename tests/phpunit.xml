@@ -5,6 +5,7 @@
     </php>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../Alarmsirene</directory>
             <directory suffix=".php">../HM-Sec-Sir-WM</directory>
             <directory suffix=".php">../HmIP-ASIR</directory>
         </whitelist>
