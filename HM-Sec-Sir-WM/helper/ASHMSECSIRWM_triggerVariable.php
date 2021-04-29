@@ -4,7 +4,7 @@
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
  * @license    	CC BY-NC-SA 4.0
- * @see         https://github.com/ubittner/Alarmsirene/tree/master/HmIP-ASIR
+ * @see         https://github.com/ubittner/Alarmsirene/tree/master/HM-Sec-Sir-WM
  */
 
 /** @noinspection PhpUnusedPrivateMethodInspection */
@@ -13,20 +13,17 @@
 
 declare(strict_types=1);
 
-trait AS_HMIPASIR_triggerVariable
+trait ASHMSECSIRWM_triggerVariable
 {
     public function CheckTriggerVariable(int $SenderID, bool $ValueChanged): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
+        $this->SendDebug(__FUNCTION__, 'Die auslösende Variable wird geprüft.', 0);
         $this->SendDebug(__FUNCTION__, 'ID ' . $SenderID . ', Wert hat sich geändert: ' . json_encode($ValueChanged), 0);
-
         $triggerVariables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (empty($triggerVariables)) {
             return false;
         }
-
         $result = false;
-
         foreach ($triggerVariables as $triggerVariable) {
             $execute = false;
             $id = $triggerVariable->ID;
@@ -281,7 +278,6 @@ trait AS_HMIPASIR_triggerVariable
                 }
             }
         }
-
         return $result;
     }
 }

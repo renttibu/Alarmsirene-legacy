@@ -1,0 +1,14 @@
+{
+  "id": "{D879947C-985D-0F76-F454-FE0DADC11AE7}",
+  "name": "Alarmsirene HMSecSirWM",
+  "type": 3,
+  "vendor": "Ulrich Bittner",
+  "aliases": [
+    "Alarmsirene HM-Sec-Sir-WM"
+  ],
+  "url": "https://github.com/ubittner/Alarmsirene/tree/master/HM-Sec-Sir-WM",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "ASHMSECSIRWM"
+}

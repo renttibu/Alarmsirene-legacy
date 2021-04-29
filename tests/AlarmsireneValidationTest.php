@@ -6,24 +6,14 @@ include_once __DIR__ . '/stubs/Validator.php';
 
 class AlarmsireneValidationTest extends TestCaseSymconValidation
 {
-    public function testValidateAlarmsirene(): void
+    public function testValidateLibrary(): void
     {
         $this->validateLibrary(__DIR__ . '/..');
     }
 
-    public function testValidateAlarmsirene1Module(): void
+    public function testValidateHMSecSirWMModule(): void
     {
-        $this->validateModule(__DIR__ . '/../Alarmsirene 1');
-    }
-
-    public function testValidateAlarmsirene2Module(): void
-    {
-        $this->validateModule(__DIR__ . '/../Alarmsirene 2');
-    }
-
-    public function testValidateAlarmsirene3Module(): void
-    {
-        $this->validateModule(__DIR__ . '/../Alarmsirene 3');
+        $this->validateModule(__DIR__ . '/../HM-Sec-Sir-WM');
     }
 
     public function testValidateHmIPASIRModule(): void
