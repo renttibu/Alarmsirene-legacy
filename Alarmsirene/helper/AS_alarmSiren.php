@@ -3,11 +3,10 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/Alarmsirene
  */
 
-/** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnused */
 
@@ -23,6 +22,12 @@ trait AS_alarmSiren
 
     public function ToggleAlarmSiren(bool $State): bool
     {
+        $acousticSignal = $this->ReadPropertyInteger('AlarmSirenAcousticSignal');
+        $opticalSignal = $this->ReadPropertyInteger('AlarmSirenOpticalSignal');
+        if ($acousticSignal == 0 && $opticalSignal == 0) {
+            $this->SendDebug(__FUNCTION__, 'Abbruch, es ist keine Alarmsirene vorhanden!', 0);
+            return false;
+        }
         $alarmSirenValue = $this->GetValue('AlarmSiren');
         $statusValue = $this->GetValue('Status');
         $signallingAmountValue = $this->GetValue('SignallingAmount');
@@ -295,7 +300,7 @@ trait AS_alarmSiren
                 $debugText = 'Parameter: 1 = Voralarm';
                 break;
 
-            case 2: # Pre alarm
+            case 2: # Main alarm
                 $debugText = 'Parameter: 2 = Hauptalarm';
                 break;
 
@@ -303,7 +308,7 @@ trait AS_alarmSiren
                 $debugText = 'Parameter: 3 = Nachalarm';
                 break;
 
-            default:
+            default: # Alarm siren off
                 $debugText = 'Parameter: 0 = Alarmsirene ausschalten';
         }
         $this->SendDebug(__FUNCTION__, $debugText, 0);

@@ -3,7 +3,7 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/HmIP-ASIR
  */
 
@@ -17,30 +17,26 @@ trait ASHMIPASIR_muteMode
 {
     public function ToggleMuteMode(bool $State): void
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         if ($this->CheckMaintenanceMode()) {
             return;
         }
-
         $this->SetValue('MuteMode', $State);
+        $stateText = 'ausgeschaltet.';
         if ($State) {
+            $stateText = 'eingeschaltet.';
             $this->ToggleAlarmSiren(false);
         }
+        $this->SendDebug(__FUNCTION__, 'Die Stummschaltung wurde ' . $stateText, 0);
     }
 
     public function StartMuteMode(): void
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $this->ToggleMuteMode(true);
         $this->SetMuteModeTimer();
     }
 
     public function StopMuteMode(): void
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $this->ToggleMuteMode(false);
         $this->SetMuteModeTimer();
     }
@@ -49,17 +45,13 @@ trait ASHMIPASIR_muteMode
 
     private function SetMuteModeTimer(): void
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $use = $this->ReadPropertyBoolean('UseAutomaticMuteMode');
-
         // Start
         $milliseconds = 0;
         if ($use) {
             $milliseconds = $this->GetInterval('MuteModeStartTime');
         }
         $this->SetTimerInterval('StartMuteMode', $milliseconds);
-
         // End
         $milliseconds = 0;
         if ($use) {
@@ -70,36 +62,27 @@ trait ASHMIPASIR_muteMode
 
     private function GetInterval(string $TimerName): int
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $timer = json_decode($this->ReadPropertyString($TimerName));
-
         $now = time();
         $hour = $timer->hour;
         $minute = $timer->minute;
         $second = $timer->second;
-
         $definedTime = $hour . ':' . $minute . ':' . $second;
         if (time() >= strtotime($definedTime)) {
             $timestamp = mktime($hour, $minute, $second, (int) date('n'), (int) date('j') + 1, (int) date('Y'));
         } else {
             $timestamp = mktime($hour, $minute, $second, (int) date('n'), (int) date('j'), (int) date('Y'));
         }
-
         return ($timestamp - $now) * 1000;
     }
 
     private function CheckMuteModeTimer(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         if (!$this->ReadPropertyBoolean('UseAutomaticMuteMode')) {
             return false;
         }
-
         $start = $this->GetTimerInterval('StartMuteMode');
         $stop = $this->GetTimerInterval('StopMuteMode');
-
         if ($start > $stop) {
             $this->ToggleMuteMode(true);
             return true;
@@ -111,14 +94,11 @@ trait ASHMIPASIR_muteMode
 
     private function CheckMuteMode(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $muteMode = boolval($this->GetValue('MuteMode'));
         if ($muteMode) {
             $text = 'Abbruch, die Stummschaltung ist aktiv!';
             $this->SendDebug(__FUNCTION__, $text, 0);
         }
-
         return $muteMode;
     }
 }

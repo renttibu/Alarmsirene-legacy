@@ -3,7 +3,7 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/HmIP-ASIR
  */
 
@@ -219,7 +219,6 @@ class AlarmsireneHmIPASIR extends IPSModule
     public function GetConfigurationForm()
     {
         $formData = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-
         // Trigger variables
         $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (!empty($variables)) {
@@ -233,7 +232,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 if ($id == 0 || @!IPS_ObjectExists($id)) {
                     $rowColor = '#FFC0C0'; # red
                 }
-                $formData['elements'][4]['items'][0]['values'][] = [
+                $formData['elements'][6]['items'][0]['values'][] = [
                     'Use'              => $use,
                     'ID'               => $id,
                     'TriggerType'      => $variable->TriggerType,
@@ -242,7 +241,6 @@ class AlarmsireneHmIPASIR extends IPSModule
                     'rowColor'         => $rowColor];
             }
         }
-
         // Registered messages
         $messages = $this->GetMessageList();
         foreach ($messages as $senderID => $messageID) {
@@ -271,7 +269,6 @@ class AlarmsireneHmIPASIR extends IPSModule
                 'MessageDescription'    => $messageDescription,
                 'rowColor'              => $rowColor];
         }
-
         return json_encode($formData);
     }
 
@@ -309,11 +306,8 @@ class AlarmsireneHmIPASIR extends IPSModule
 
     private function ValidateConfiguration(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $result = true;
         $status = 102;
-
         // Check pre and main alarm
         if ($this->ReadPropertyBoolean('UsePreAlarm') && $this->ReadPropertyBoolean('UseMainAlarm')) {
             if ($this->ReadPropertyInteger('MainAlarmSignallingDelay') <= $this->ReadPropertyInteger('PreAlarmDuration')) {
@@ -324,37 +318,31 @@ class AlarmsireneHmIPASIR extends IPSModule
                 $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_WARNING);
             }
         }
-
         // Maintenance mode
         $maintenance = $this->CheckMaintenanceMode();
         if ($maintenance) {
             $result = false;
             $status = 104;
         }
-
         IPS_SetDisabled($this->InstanceID, $maintenance);
         $this->SetStatus($status);
-
         return $result;
     }
 
     private function CheckMaintenanceMode(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $result = $this->ReadPropertyBoolean('MaintenanceMode');
         if ($result) {
             $text = 'Abbruch, der Wartungsmodus ist aktiv!';
             $this->SendDebug(__FUNCTION__, $text, 0);
             $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_WARNING);
         }
-
         return $result;
     }
 
     private function RegisterMessages(): void
     {
-        // Unregister VM_UPDATE
+        // Unregister
         $messages = $this->GetMessageList();
         if (!empty($messages)) {
             foreach ($messages as $id => $message) {
@@ -365,8 +353,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 }
             }
         }
-
-        // Register VM_UPDATE
+        // Register
         $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (!empty($variables)) {
             foreach ($variables as $variable) {

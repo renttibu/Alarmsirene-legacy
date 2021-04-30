@@ -3,11 +3,10 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/HmIP-ASIR
  */
 
-/** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
@@ -16,31 +15,24 @@ trait ASHMIPASIR_alarmSiren
 {
     public function ResetSignallingAmount(): void
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
         $this->SetValue('SignallingAmount', 0);
+        $this->SendDebug(__FUNCTION__, 'Die Anzahl der Auslösungen wurde zurückgesetzt.', 0);
     }
 
     public function ToggleAlarmSiren(bool $State): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $alarmSirenValue = $this->GetValue('AlarmSiren');
         $statusValue = $this->GetValue('Status');
         $signallingAmountValue = $this->GetValue('SignallingAmount');
-
         // Switch alarm siren off
         if (!$State) {
-            $this->SendDebug(__FUNCTION__, 'Die Alarmsirene wird ausgeschaltet.', 0);
-
             // Deactivate all timers
             $this->SetTimerInterval('ExecuteMainAlarm', 0);
             $this->SetTimerInterval('ExecutePostAlarm', 0);
             $this->SetTimerInterval('DeactivateAlarmSiren', 0);
-
             $this->SetValue('AlarmSiren', false);
             $this->SetValue('Status', 0);
             $result = $this->SwitchAlarmSiren(); # Alarm siren off
-
             if (!$result) {
                 // Revert on failure
                 $this->SetValue('AlarmSiren', $alarmSirenValue);
@@ -59,31 +51,23 @@ trait ASHMIPASIR_alarmSiren
             if ($this->CheckMaintenanceMode()) {
                 return false;
             }
-
             if ($this->CheckMuteMode()) {
                 return false;
             }
-
             if (!$this->CheckSignallingAmount()) {
                 return false;
             }
-
             if ($this->GetValue('Status') != 0) {
                 return false;
             }
-
-            $this->SendDebug(__FUNCTION__, 'Die Alarmsirene wird eingeschaltet.', 0);
-
             $mode = 0;
             $result = false;
-
             // Check pre alarm
             $usePreAlarm = $this->ReadPropertyBoolean('UsePreAlarm');
             if ($usePreAlarm) {
                 $mode = 1;
                 $result = $this->ExecutePreAlarm();
             }
-
             // Check main alarm
             $useMainAlarm = $this->ReadPropertyBoolean('UseMainAlarm');
             if (!$usePreAlarm && $useMainAlarm) {
@@ -100,14 +84,12 @@ trait ASHMIPASIR_alarmSiren
                     $text = 'Die Alarmsirene wird in ' . $delay . ' ' . $unit . ' eingeschaltet.';
                 }
             }
-
             // Check post alarm
             $usePostAlarm = $this->ReadPropertyBoolean('UsePostAlarm');
             if (!$usePreAlarm && !$useMainAlarm && $usePostAlarm) {
                 $mode = 3;
                 $result = $this->ExecutePostAlarm();
             }
-
             if ($mode != 0) {
                 if (!$result) {
                     $text = 'Fehler, die Alarmsirene konnte nicht eingeschaltet werden!';
@@ -120,39 +102,29 @@ trait ASHMIPASIR_alarmSiren
         if (isset($text)) {
             $this->SendDebug(__FUNCTION__, $text, 0);
         }
-
         return $result;
     }
 
     public function ExecutePreAlarm(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         if ($this->CheckMaintenanceMode()) {
             return false;
         }
-
         if ($this->CheckMuteMode()) {
             return false;
         }
-
         if (!$this->ReadPropertyBoolean('UsePreAlarm')) {
             return false;
         }
-
         $alarmSirenValue = $this->GetValue('AlarmSiren');
         $statusValue = $this->GetValue('Status');
-
         // Check main alarm
         if ($alarmSirenValue && $statusValue == 2) {
             return false;
         }
-
         $this->SetValue('AlarmSiren', true);
         $this->SetValue('Status', 1);
-
         $result = $this->SwitchAlarmSiren(1);
-
         if (!$result) {
             // Revert on failure
             $this->SetValue('AlarmSiren', $alarmSirenValue);
@@ -164,7 +136,6 @@ trait ASHMIPASIR_alarmSiren
             $this->UpdateAlarmProtocol($text . ' (ID ' . $this->InstanceID . ')');
         }
         $this->SendDebug(__FUNCTION__, $text, 0);
-
         // Main alarm
         if ($this->ReadPropertyBoolean('UseMainAlarm')) {
             $delay = $this->ReadPropertyInteger('MainAlarmSignallingDelay');
@@ -179,16 +150,12 @@ trait ASHMIPASIR_alarmSiren
                 $this->ExecutePostAlarm();
             }
         }
-
         return $result;
     }
 
     public function ExecuteMainAlarm(bool $PanicAlarm): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $this->SetTimerInterval('ExecuteMainAlarm', 0);
-
         if (!$PanicAlarm) {
             if (!$this->ReadPropertyBoolean('UseMainAlarm')) {
                 return false;
@@ -202,14 +169,11 @@ trait ASHMIPASIR_alarmSiren
                 return false;
             }
         }
-
         $alarmSirenValue = $this->GetValue('AlarmSiren');
         $this->SetValue('AlarmSiren', true);
         $statusValue = $this->GetValue('Status');
         $this->SetValue('Status', 2);
-
         $result = $this->SwitchAlarmSiren(2);
-
         if (!$result) {
             // Revert on failure
             $this->SetValue('AlarmSiren', $alarmSirenValue);
@@ -224,7 +188,6 @@ trait ASHMIPASIR_alarmSiren
             $this->UpdateAlarmProtocol($text . ' (ID ' . $this->InstanceID . ')');
         }
         $this->SendDebug(__FUNCTION__, $text, 0);
-
         $unit = 'Sekunden';
         $duration = $this->ReadPropertyInteger('MainAlarmDuration') * 1000;
         if ($duration == 1000) {
@@ -232,34 +195,26 @@ trait ASHMIPASIR_alarmSiren
         }
         $text = 'Die Alarmsirene wird in ' . $duration / 1000 . ' ' . $unit . ' ausgeschaltet.';
         $this->SendDebug(__FUNCTION__, $text, 0);
-
         // Set timer
         if ($this->ReadPropertyBoolean('UsePostAlarm')) {
             $this->SetTimerInterval('ExecutePostAlarm', $duration);
         } else {
             $this->SetTimerInterval('DeactivateAlarmSiren', $duration);
         }
-
         return $result;
     }
 
     public function ExecutePostAlarm(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $this->SetTimerInterval('ExecutePostAlarm', 0);
-
         if (!$this->ReadPropertyBoolean('UsePostAlarm')) {
             return false;
         }
-
         $alarmSirenValue = $this->GetValue('AlarmSiren');
         $this->SetValue('AlarmSiren', true);
         $statusValue = $this->GetValue('Status');
         $this->SetValue('Status', 3);
-
         $result = $this->SwitchAlarmSiren(3);
-
         if (!$result) {
             // Revert on failure
             $this->SetValue('AlarmSiren', $alarmSirenValue);
@@ -271,9 +226,7 @@ trait ASHMIPASIR_alarmSiren
             $this->UpdateAlarmProtocol($text . ' (ID ' . $this->InstanceID . ')');
         }
         $this->SendDebug(__FUNCTION__, $text, 0);
-
         $this->SetTimerInterval('DeactivateAlarmSiren', $this->ReadPropertyInteger('PostAlarmDuration') * 60 * 1000);
-
         return $result;
     }
 
@@ -295,28 +248,24 @@ trait ASHMIPASIR_alarmSiren
                 return false;
             }
         }
-
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
         switch ($AlarmType) {
             case 1: # Pre alarm
-                $debugText = 'Parameter: 1 Voralarm';
+                $debugText = 'Parameter: 1 = Voralarm';
                 break;
 
-            case 2: # Pre alarm
-                $debugText = 'Parameter: 2 Hauptalarm';
+            case 2: # Main alarm
+                $debugText = 'Parameter: 2 = Hauptalarm';
                 break;
 
             case 3: # Post alarm
-                $debugText = 'Parameter: 3 Nachalarm';
+                $debugText = 'Parameter: 3 = Nachalarm';
                 break;
 
-            default:
+            default: # Alarm siren off
                 $debugText = 'Parameter: 0 Alarmsirene ausschalten';
         }
         $this->SendDebug(__FUNCTION__, $debugText, 0);
-
         $result = true;
-
         // Alarm siren
         $id = $this->ReadPropertyInteger('AlarmSiren');
         if ($id != 0 && @IPS_ObjectExists($id)) {
@@ -405,7 +354,6 @@ trait ASHMIPASIR_alarmSiren
             $this->SendDebug(__FUNCTION__, 'Ergebnis Einheit Zeitdauer: ' . json_encode($parameter3), 0);
             $parameter4 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $durationValue);
             $this->SendDebug(__FUNCTION__, 'Ergebnis Wert Zeitdauer: ' . json_encode($parameter4), 0);
-
             // Switch alarm siren again in case of error
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 $this->SendDebug(__FUNCTION__, 'Es wird erneut versucht die Alarmsirene zu schalten.', 0);
@@ -415,18 +363,15 @@ trait ASHMIPASIR_alarmSiren
                 $parameter3 = @HM_WriteValueInteger($id, 'DURATION_UNIT', $durationUnit);
                 $parameter4 = @HM_WriteValueInteger($id, 'DURATION_VALUE', $durationValue);
             }
-
             if (!$parameter1 || !$parameter2 || !$parameter3 || !$parameter4) {
                 $result = false;
             }
-
             if (!$result) {
                 $this->SendDebug(__FUNCTION__, 'Fehler, die Alarmsirene konnte nicht geschaltet werden!', 0);
             } else {
                 $this->SendDebug(__FUNCTION__, 'Die Alarmsirene wurde erfolgreich geschaltet.', 0);
             }
         }
-
         // Virtual remote control
         $virtualRemoteControl = false;
         switch ($AlarmType) {
@@ -461,7 +406,6 @@ trait ASHMIPASIR_alarmSiren
                     $result = @RequestAction($id, true);
                 }
         }
-
         if ($virtualRemoteControl) {
             if (!$result) {
                 $this->SendDebug(__FUNCTION__, 'Fehler, die virtuelle Fernbedienung konnte nicht geschaltet werden!', 0);
@@ -469,14 +413,11 @@ trait ASHMIPASIR_alarmSiren
                 $this->SendDebug(__FUNCTION__, 'Die virtuelle Fernbedienung wurde erfolgreich geschaltet.', 0);
             }
         }
-
         return $result;
     }
 
     private function CheckSignallingAmount(): bool
     {
-        $this->SendDebug(__FUNCTION__, 'Die Methode wird ausgeführt.', 0);
-
         $maximum = $this->ReadPropertyInteger('MainAlarmMaximumSignallingAmount');
         if ($maximum > 0) {
             if ($this->GetValue('SignallingAmount') >= $maximum) {

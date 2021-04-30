@@ -3,11 +3,10 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/HM-Sec-Sir-WM
  */
 
-/** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnused */
 
@@ -24,6 +23,9 @@ trait ASHMSECSIRWM_alarmSiren
     public function ToggleAlarmSiren(bool $State): bool
     {
         $id = $this->ReadPropertyInteger('AlarmSiren');
+        if ($id == 0 || @!IPS_ObjectExists($id)) {
+            return false;
+        }
         $alarmSirenValue = $this->GetValue('AlarmSiren');
         $statusValue = $this->GetValue('Status');
         $signallingAmountValue = $this->GetValue('SignallingAmount');
@@ -35,9 +37,6 @@ trait ASHMSECSIRWM_alarmSiren
             $this->SetTimerInterval('DeactivateAlarmSiren', 0);
             $this->SetValue('AlarmSiren', false);
             $this->SetValue('Status', 0);
-            if ($id == 0 || @!IPS_ObjectExists($id)) {
-                return false;
-            }
             $result = $this->SwitchAlarmSiren(false);
             if (!$result) {
                 // Revert on failure

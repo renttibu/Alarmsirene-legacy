@@ -3,11 +3,10 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/HM-Sec-Sir-WM
  */
 
-/** @noinspection PhpUnusedPrivateMethodInspection */
 /** @noinspection DuplicatedCode */
 /** @noinspection PhpUnused */
 

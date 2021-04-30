@@ -138,7 +138,7 @@
             {
               "caption": "Auslösende Variable",
               "name": "ID",
-              "width": "600px",
+              "width": "auto",
               "add": 0,
               "onClick": "echo 'ID ' . $TriggerVariables['ID'];",
               "edit": {
@@ -341,7 +341,7 @@
             {
               "caption": "Sender Name",
               "name": "SenderName",
-              "width": "450px"
+              "width": "auto"
             },
             {
               "caption": "Nachrichten ID",

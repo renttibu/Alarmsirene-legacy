@@ -3,7 +3,7 @@
 /*
  * @author      Ulrich Bittner
  * @copyright   (c) 2020, 2021
- * @license    	CC BY-NC-SA 4.0
+ * @license     CC BY-NC-SA 4.0
  * @see         https://github.com/ubittner/Alarmsirene/tree/master/Alarmsirene
  */
 
@@ -340,7 +340,7 @@ class Alarmsirene extends IPSModule
 
     private function RegisterMessages(): void
     {
-        // Unregister VM_UPDATE
+        // Unregister
         $messages = $this->GetMessageList();
         if (!empty($messages)) {
             foreach ($messages as $id => $message) {
@@ -351,7 +351,7 @@ class Alarmsirene extends IPSModule
                 }
             }
         }
-        // Register VM_UPDATE
+        // Register
         $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (!empty($variables)) {
             foreach ($variables as $variable) {
