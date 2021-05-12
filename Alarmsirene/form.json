@@ -198,9 +198,20 @@
               "name": "ID",
               "width": "auto",
               "add": 0,
-              "onClick": "echo 'ID ' . $TriggerVariables['ID'];",
+              "onClick": "AS_ShowVariableDetails($id, $TriggerVariables['ID']);",
               "edit": {
                 "type": "SelectVariable"
+              }
+            },
+            {
+              "caption": "Info",
+              "name": "Info",
+              "width": "160px",
+              "add": "",
+              "visible": false,
+              "edit": {
+                "type": "Button",
+                "onClick": "AS_ShowVariableDetails($id, $ID);"
               }
             },
             {
