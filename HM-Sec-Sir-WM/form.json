@@ -140,7 +140,7 @@
               "name": "ID",
               "width": "auto",
               "add": 0,
-              "onClick": "ASHMSECSIRWM_ShowVariableDetails($id, $TriggerVariables['ID']);",
+              "onClick": "ASHMSECSIRWM_EnableTriggerVariableConfigurationButton($id, $TriggerVariables['ID']);",
               "edit": {
                 "type": "SelectVariable"
               }
@@ -232,6 +232,14 @@
               }
             }
           ]
+        },
+        {
+          "type": "OpenObjectButton",
+          "caption": "Bearbeiten",
+          "name": "TriggerVariableConfigurationButton",
+          "enabled": false,
+          "visible": false,
+          "objectID": 0
         }
       ]
     },

@@ -63,37 +63,6 @@
       "type": "ExpansionPanel",
       "caption": "Virtuelle Fernbedienungen",
       "items": [
-        {
-          "type": "SelectVariable",
-          "name": "VirtualRemoteControlAlarmSirenOff",
-          "caption": "Alarmsirene ausschalten",
-          "width": "600px"
-        },
-        {
-          "type": "SelectVariable",
-          "name": "VirtualRemoteControlPreAlarm",
-          "caption": "Voralarm",
-          "width": "600px"
-        },
-        {
-          "type": "SelectVariable",
-          "name": "VirtualRemoteControlMainAlarm",
-          "caption": "Hauptalarm",
-          "width": "600px"
-        },
-        {
-          "type": "SelectVariable",
-          "name": "VirtualRemoteControlPostAlarm",
-          "caption": "Nachalarm",
-          "width": "600px"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "VirtualRemoteControlSwitchingDelay",
-          "caption": "Schaltverzögerung",
-          "minimum": 0,
-          "suffix": "Millisekunden"
-        }
       ]
     },
     {
@@ -476,7 +445,7 @@
               "name": "ID",
               "width": "auto",
               "add": 0,
-              "onClick": "ASHMIPASIR_ShowVariableDetails($id, $TriggerVariables['ID']);",
+              "onClick": "ASHMIPASIR_EnableTriggerVariableConfigurationButton($id, $TriggerVariables['ID']);",
               "edit": {
                 "type": "SelectVariable"
               }
@@ -568,6 +537,14 @@
               }
             }
           ]
+        },
+        {
+          "type": "OpenObjectButton",
+          "caption": "Bearbeiten",
+          "name": "TriggerVariableConfigurationButton",
+          "enabled": false,
+          "visible": false,
+          "objectID": 0
         }
       ]
     },

@@ -219,6 +219,123 @@ class AlarmsireneHmIPASIR extends IPSModule
     public function GetConfigurationForm()
     {
         $formData = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        // Virtual remote controls
+        // Alarm siren off
+        $id = $this->ReadPropertyInteger('VirtualRemoteControlAlarmSirenOff');
+        $enabled = false;
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            $enabled = true;
+        }
+        $formData['elements'][2]['items'][0] = [
+            'type'  => 'RowLayout',
+            'items' => [$formData['elements'][2]['items'][0]['items'][0] = [
+                'type'    => 'SelectVariable',
+                'name'    => 'VirtualRemoteControlAlarmSirenOff',
+                'caption' => 'Alarmsirene ausschalten',
+                'width'   => '600px',
+            ],
+                $formData['elements'][2]['items'][0]['items'][1] = [
+                    'type'    => 'Label',
+                    'caption' => ' ',
+                    'visible' => $enabled
+                ],
+                $formData['elements'][2]['items'][0]['items'][2] = [
+                    'type'     => 'OpenObjectButton',
+                    'caption'  => 'Konfigurieren',
+                    'visible'  => $enabled,
+                    'objectID' => $id
+                ]
+            ]
+        ];
+        // Pre alarm
+        $id = $this->ReadPropertyInteger('VirtualRemoteControlPreAlarm');
+        $enabled = false;
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            $enabled = true;
+        }
+        $formData['elements'][2]['items'][1] = [
+            'type'  => 'RowLayout',
+            'items' => [$formData['elements'][2]['items'][1]['items'][0] = [
+                'type'    => 'SelectVariable',
+                'name'    => 'VirtualRemoteControlPreAlarm',
+                'caption' => 'Voralarm',
+                'width'   => '600px',
+            ],
+                $formData['elements'][2]['items'][1]['items'][1] = [
+                    'type'    => 'Label',
+                    'caption' => ' ',
+                    'visible' => $enabled
+                ],
+                $formData['elements'][2]['items'][1]['items'][2] = [
+                    'type'     => 'OpenObjectButton',
+                    'caption'  => 'Konfigurieren',
+                    'visible'  => $enabled,
+                    'objectID' => $id
+                ]
+            ]
+        ];
+        // Main alarm
+        $id = $this->ReadPropertyInteger('VirtualRemoteControlMainAlarm');
+        $visibility = false;
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            $visibility = true;
+        }
+        $formData['elements'][2]['items'][2] = [
+            'type'  => 'RowLayout',
+            'items' => [$formData['elements'][2]['items'][2]['items'][0] = [
+                'type'    => 'SelectVariable',
+                'name'    => 'VirtualRemoteControlMainAlarm',
+                'caption' => 'Hauptalarm',
+                'width'   => '600px',
+            ],
+                $formData['elements'][2]['items'][2]['items'][1] = [
+                    'type'    => 'Label',
+                    'caption' => ' ',
+                    'visible' => $visibility
+                ],
+                $formData['elements'][2]['items'][2]['items'][2] = [
+                    'type'     => 'OpenObjectButton',
+                    'caption'  => 'Konfigurieren',
+                    'visible'  => $visibility,
+                    'objectID' => $id
+                ]
+            ]
+        ];
+        // Post alarm
+        $id = $this->ReadPropertyInteger('VirtualRemoteControlPostAlarm');
+        $visibility = false;
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            $visibility = true;
+        }
+        $formData['elements'][2]['items'][3] = [
+            'type'  => 'RowLayout',
+            'items' => [$formData['elements'][2]['items'][3]['items'][0] = [
+                'type'    => 'SelectVariable',
+                'name'    => 'VirtualRemoteControlPostAlarm',
+                'caption' => 'Nachalarm',
+                'width'   => '600px',
+            ],
+                $formData['elements'][2]['items'][3]['items'][1] = [
+                    'type'    => 'Label',
+                    'caption' => ' ',
+                    'visible' => $visibility
+                ],
+                $formData['elements'][2]['items'][3]['items'][2] = [
+                    'type'     => 'OpenObjectButton',
+                    'caption'  => 'Konfigurieren',
+                    'visible'  => $visibility,
+                    'objectID' => $id
+                ]
+            ]
+        ];
+        // Switching delay
+        $formData['elements'][2]['items'][4] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'VirtualRemoteControlSwitchingDelay',
+            'caption' => 'Schaltverzögerung',
+            'minimum' => 0,
+            'suffix'  => 'Sekunden'
+        ];
         // Trigger variables
         $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
         if (!empty($variables)) {
@@ -233,12 +350,12 @@ class AlarmsireneHmIPASIR extends IPSModule
                     $rowColor = '#FFC0C0'; # red
                 }
                 $formData['elements'][6]['items'][0]['values'][] = [
-                    'Use'              => $use,
-                    'ID'               => $id,
-                    'TriggerType'      => $variable->TriggerType,
-                    'TriggerValue'     => $variable->TriggerValue,
-                    'TriggerAction'    => $variable->TriggerAction,
-                    'rowColor'         => $rowColor];
+                    'Use'           => $use,
+                    'ID'            => $id,
+                    'TriggerType'   => $variable->TriggerType,
+                    'TriggerValue'  => $variable->TriggerValue,
+                    'TriggerAction' => $variable->TriggerAction,
+                    'rowColor'      => $rowColor];
             }
         }
         // Registered messages
@@ -263,11 +380,11 @@ class AlarmsireneHmIPASIR extends IPSModule
                     $messageDescription = 'keine Bezeichnung';
             }
             $formData['actions'][1]['items'][0]['values'][] = [
-                'SenderID'              => $senderID,
-                'SenderName'            => $senderName,
-                'MessageID'             => $messageID,
-                'MessageDescription'    => $messageDescription,
-                'rowColor'              => $rowColor];
+                'SenderID'           => $senderID,
+                'SenderName'         => $senderName,
+                'MessageID'          => $messageID,
+                'MessageDescription' => $messageDescription,
+                'rowColor'           => $rowColor];
         }
         return json_encode($formData);
     }
@@ -275,6 +392,14 @@ class AlarmsireneHmIPASIR extends IPSModule
     public function ReloadConfiguration()
     {
         $this->ReloadForm();
+    }
+
+    public function EnableTriggerVariableConfigurationButton(int $ObjectID): void
+    {
+        $this->UpdateFormField('TriggerVariableConfigurationButton', 'caption', 'Variable ' . $ObjectID . ' Bearbeiten');
+        $this->UpdateFormField('TriggerVariableConfigurationButton', 'visible', true);
+        $this->UpdateFormField('TriggerVariableConfigurationButton', 'enabled', true);
+        $this->UpdateFormField('TriggerVariableConfigurationButton', 'objectID', $ObjectID);
     }
 
     public function ShowVariableDetails(int $VariableID): void

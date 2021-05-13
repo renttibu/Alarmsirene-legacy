@@ -198,7 +198,7 @@
               "name": "ID",
               "width": "auto",
               "add": 0,
-              "onClick": "AS_ShowVariableDetails($id, $TriggerVariables['ID']);",
+              "onClick": "AS_EnableTriggerVariableConfigurationButton($id, $TriggerVariables['ID']);",
               "edit": {
                 "type": "SelectVariable"
               }
@@ -290,6 +290,14 @@
               }
             }
           ]
+        },
+        {
+          "type": "OpenObjectButton",
+          "caption": "Bearbeiten",
+          "name": "TriggerVariableConfigurationButton",
+          "enabled": false,
+          "visible": false,
+          "objectID": 0
         }
       ]
     },
