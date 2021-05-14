@@ -44,33 +44,6 @@
       "type": "ExpansionPanel",
       "caption": "Alarmsirene",
       "items": [
-        {
-          "type": "SelectVariable",
-          "name": "AlarmSirenAcousticSignal",
-          "caption": "Akustisches Signal",
-          "width": "600px"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "AlarmSirenAcousticSignalSwitchingDelay",
-          "caption": "Schaltverzögerung",
-          "minimum": 0,
-          "suffix": "Millisekunden"
-        },
-        {
-          "type": "SelectVariable",
-          "name": "AlarmSirenOpticalSignal",
-          "caption": "Optisches Signal",
-          "width": "600px"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "AlarmSirenOpticalSignalSwitchingDelay",
-          "caption": "Schaltverzögerung",
-          "minimum": 0,
-          "suffix": "Millisekunden"
-        }
-
       ]
     },
     {
@@ -305,13 +278,6 @@
       "type": "ExpansionPanel",
       "caption": "Alarmprotokoll",
       "items": [
-        {
-          "type": "SelectModule",
-          "name": "AlarmProtocol",
-          "caption": "Alarmprotokoll",
-          "moduleID": "{33EF9DF1-C8D7-01E7-F168-0A1927F1C61F}",
-          "width": "600px"
-        }
       ]
     },
     {

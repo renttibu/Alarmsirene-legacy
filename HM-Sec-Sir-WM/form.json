@@ -44,19 +44,6 @@
       "type": "ExpansionPanel",
       "caption": "Alarmsirene",
       "items": [
-        {
-          "type": "SelectInstance",
-          "name": "AlarmSiren",
-          "caption": "HM-Sec-Sir-WM Instanz, Kanal 3",
-          "width": "600px"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "AlarmSirenSwitchingDelay",
-          "caption": "Schaltverzögerung",
-          "minimum": 0,
-          "suffix": "Millisekunden"
-        }
       ]
     },
     {
@@ -247,13 +234,6 @@
       "type": "ExpansionPanel",
       "caption": "Alarmprotokoll",
       "items": [
-        {
-          "type": "SelectModule",
-          "name": "AlarmProtocol",
-          "caption": "Alarmprotokoll",
-          "moduleID": "{33EF9DF1-C8D7-01E7-F168-0A1927F1C61F}",
-          "width": "600px"
-        }
       ]
     },
     {

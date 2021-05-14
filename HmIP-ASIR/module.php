@@ -219,6 +219,40 @@ class AlarmsireneHmIPASIR extends IPSModule
     public function GetConfigurationForm()
     {
         $formData = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        // Alarm siren
+        $id = $this->ReadPropertyInteger('AlarmSiren');
+        $enabled = false;
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            $enabled = true;
+        }
+        $formData['elements'][1]['items'][0] = [
+            'type'  => 'RowLayout',
+            'items' => [$formData['elements'][1]['items'][0]['items'][0] = [
+                'type'    => 'SelectInstance',
+                'name'    => 'AlarmSiren',
+                'caption' => 'HmIP-ASIR Instanz, Kanal 3',
+                'width'   => '600px',
+            ],
+                $formData['elements'][1]['items'][0]['items'][1] = [
+                    'type'    => 'Label',
+                    'caption' => ' ',
+                    'visible' => $enabled
+                ],
+                $formData['elements'][1]['items'][0]['items'][2] = [
+                    'type'     => 'OpenObjectButton',
+                    'caption'  => 'ID ' . $id . ' konfigurieren',
+                    'visible'  => $enabled,
+                    'objectID' => $id
+                ]
+            ]
+        ];
+        $formData['elements'][1]['items'][1] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'AlarmSirenSwitchingDelay',
+            'caption' => 'Schaltverzögerung',
+            'minimum' => 0,
+            'suffix'  => 'Millisekunden'
+        ];
         // Virtual remote controls
         // Alarm siren off
         $id = $this->ReadPropertyInteger('VirtualRemoteControlAlarmSirenOff');
@@ -241,7 +275,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 ],
                 $formData['elements'][2]['items'][0]['items'][2] = [
                     'type'     => 'OpenObjectButton',
-                    'caption'  => 'Konfigurieren',
+                    'caption'  => 'ID ' . $id . ' bearbeiten',
                     'visible'  => $enabled,
                     'objectID' => $id
                 ]
@@ -268,7 +302,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 ],
                 $formData['elements'][2]['items'][1]['items'][2] = [
                     'type'     => 'OpenObjectButton',
-                    'caption'  => 'Konfigurieren',
+                    'caption'  => 'ID ' . $id . ' bearbeiten',
                     'visible'  => $enabled,
                     'objectID' => $id
                 ]
@@ -295,7 +329,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 ],
                 $formData['elements'][2]['items'][2]['items'][2] = [
                     'type'     => 'OpenObjectButton',
-                    'caption'  => 'Konfigurieren',
+                    'caption'  => 'ID ' . $id . ' bearbeiten',
                     'visible'  => $visibility,
                     'objectID' => $id
                 ]
@@ -322,7 +356,7 @@ class AlarmsireneHmIPASIR extends IPSModule
                 ],
                 $formData['elements'][2]['items'][3]['items'][2] = [
                     'type'     => 'OpenObjectButton',
-                    'caption'  => 'Konfigurieren',
+                    'caption'  => 'ID ' . $id . ' bearbeiten',
                     'visible'  => $visibility,
                     'objectID' => $id
                 ]
@@ -358,6 +392,34 @@ class AlarmsireneHmIPASIR extends IPSModule
                     'rowColor'      => $rowColor];
             }
         }
+        // Alarm protocol
+        $id = $this->ReadPropertyInteger('AlarmProtocol');
+        $enabled = false;
+        if ($id != 0 && @IPS_ObjectExists($id)) {
+            $enabled = true;
+        }
+        $formData['elements'][7]['items'][0] = [
+            'type'  => 'RowLayout',
+            'items' => [$formData['elements'][7]['items'][0]['items'][0] = [
+                'type'     => 'SelectModule',
+                'name'     => 'AlarmProtocol',
+                'caption'  => 'Alarmprotokoll',
+                'moduleID' => '{33EF9DF1-C8D7-01E7-F168-0A1927F1C61F}',
+                'width'    => '600px',
+            ],
+                $formData['elements'][7]['items'][0]['items'][1] = [
+                    'type'    => 'Label',
+                    'caption' => ' ',
+                    'visible' => $enabled
+                ],
+                $formData['elements'][7]['items'][0]['items'][2] = [
+                    'type'     => 'OpenObjectButton',
+                    'caption'  => 'ID ' . $id . ' konfigurieren',
+                    'visible'  => $enabled,
+                    'objectID' => $id
+                ]
+            ]
+        ];
         // Registered messages
         $messages = $this->GetMessageList();
         foreach ($messages as $senderID => $messageID) {
