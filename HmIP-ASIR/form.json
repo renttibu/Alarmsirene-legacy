@@ -679,32 +679,5 @@
         }
       ]
     }
-  ],
-  "status": [
-    {
-      "code": 101,
-      "icon": "active",
-      "caption": "Alarmsirene HmIP-ASIR wird erstellt"
-    },
-    {
-      "code": 102,
-      "icon": "active",
-      "caption": "Alarmsirene HmIP-ASIR ist aktiv"
-    },
-    {
-      "code": 103,
-      "icon": "active",
-      "caption": "Alarmsirene HmIP-ASIR wird gelöscht"
-    },
-    {
-      "code": 104,
-      "icon": "inactive",
-      "caption": "Alarmsirene HmIP-ASIR ist inaktiv"
-    },
-    {
-      "code": 200,
-      "icon": "inactive",
-      "caption": "Es ist Fehler aufgetreten, weitere Informationen unter Meldungen, im Log oder Debug!"
-    }
   ]
 }
