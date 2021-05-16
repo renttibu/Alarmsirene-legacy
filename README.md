@@ -2,7 +2,7 @@
 
 [![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.5-blue.svg)](https://www.symcon.de)
 [![Module Version](https://img.shields.io/badge/Module_Version-5.1-blue.svg)]()
-[![Module Build](https://img.shields.io/badge/Module_Build-18-blue.svg)]()
+[![Module Build](https://img.shields.io/badge/Module_Build-19-blue.svg)]()
 [![Module Date](https://img.shields.io/badge/Module_Date-20210516-blue.svg)]()  
 [![Check Style](https://github.com/ubittner/Alarmsirene/workflows/Check%20Style/badge.svg)](https://github.com/ubittner/Alarmsirene/actions)
 [![Run Tests](https://github.com/ubittner/Alarmsirene/workflows/Run%20Tests/badge.svg)](https://github.com/ubittner/Alarmsirene/actions)  
