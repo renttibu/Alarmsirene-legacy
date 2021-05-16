@@ -42,6 +42,12 @@ class AlarmsireneHmIPASIR extends IPSModule
         // Alarm siren
         $this->RegisterPropertyInteger('AlarmSiren', 0);
         $this->RegisterPropertyInteger('AlarmSirenSwitchingDelay', 0);
+        // Virtual remote controls
+        $this->RegisterPropertyInteger('VirtualRemoteControlAlarmSirenOff', 0);
+        $this->RegisterPropertyInteger('VirtualRemoteControlPreAlarm', 0);
+        $this->RegisterPropertyInteger('VirtualRemoteControlMainAlarm', 0);
+        $this->RegisterPropertyInteger('VirtualRemoteControlPostAlarm', 0);
+        $this->RegisterPropertyInteger('VirtualRemoteControlSwitchingDelay', 0);
         // Pre alarm
         $this->RegisterPropertyBoolean('UsePreAlarm', true);
         $this->RegisterPropertyInteger('PreAlarmDuration', 3);
@@ -58,12 +64,6 @@ class AlarmsireneHmIPASIR extends IPSModule
         $this->RegisterPropertyBoolean('UsePostAlarm', true);
         $this->RegisterPropertyInteger('PostAlarmDuration', 5);
         $this->RegisterPropertyInteger('PostAlarmOpticalSignal', 1);
-        // Virtual remote controls
-        $this->RegisterPropertyInteger('VirtualRemoteControlAlarmSirenOff', 0);
-        $this->RegisterPropertyInteger('VirtualRemoteControlPreAlarm', 0);
-        $this->RegisterPropertyInteger('VirtualRemoteControlMainAlarm', 0);
-        $this->RegisterPropertyInteger('VirtualRemoteControlPostAlarm', 0);
-        $this->RegisterPropertyInteger('VirtualRemoteControlSwitchingDelay', 0);
         // Trigger Variables
         $this->RegisterPropertyString('TriggerVariables', '[]');
         // Alarm protocol
@@ -155,12 +155,43 @@ class AlarmsireneHmIPASIR extends IPSModule
             $this->SetValue('Status', 0);
         }
 
+        // Delete all references
+        foreach ($this->GetReferenceList() as $referenceID) {
+            $this->UnregisterReference($referenceID);
+        }
+
+        // Delete all registrations
+        foreach ($this->GetMessageList() as $senderID => $messages) {
+            foreach ($messages as $message) {
+                if ($message == VM_UPDATE) {
+                    $this->UnregisterMessage($senderID, VM_UPDATE);
+                }
+            }
+        }
+
         // Validation
         if (!$this->ValidateConfiguration()) {
             return;
         }
 
-        $this->RegisterMessages();
+        // Register references and update messages
+        $properties = ['AlarmSiren', 'VirtualRemoteControlAlarmSirenOff', 'VirtualRemoteControlPreAlarm', 'VirtualRemoteControlMainAlarm', 'AlarmProtocol'];
+        foreach ($properties as $property) {
+            $id = $this->ReadPropertyInteger($property);
+            if ($id != 0 && @IPS_ObjectExists($id)) {
+                $this->RegisterReference($id);
+            }
+        }
+        $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
+        foreach ($variables as $variable) {
+            if ($variable->Use) {
+                if ($variable->ID != 0 && @IPS_ObjectExists($variable->ID)) {
+                    $this->RegisterReference($variable->ID);
+                    $this->RegisterMessage($variable->ID, VM_UPDATE);
+                }
+            }
+        }
+
         $this->SetMuteModeTimer();
         $this->CheckMuteModeTimer();
     }
@@ -626,31 +657,5 @@ class AlarmsireneHmIPASIR extends IPSModule
             $this->LogMessage('ID ' . $this->InstanceID . ', ' . __FUNCTION__ . ', ' . $text, KL_WARNING);
         }
         return $result;
-    }
-
-    private function RegisterMessages(): void
-    {
-        // Unregister
-        $messages = $this->GetMessageList();
-        if (!empty($messages)) {
-            foreach ($messages as $id => $message) {
-                foreach ($message as $messageType) {
-                    if ($messageType == VM_UPDATE) {
-                        $this->UnregisterMessage($id, VM_UPDATE);
-                    }
-                }
-            }
-        }
-        // Register
-        $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
-        if (!empty($variables)) {
-            foreach ($variables as $variable) {
-                if ($variable->Use) {
-                    if ($variable->ID != 0 && @IPS_ObjectExists($variable->ID)) {
-                        $this->RegisterMessage($variable->ID, VM_UPDATE);
-                    }
-                }
-            }
-        }
     }
 }
