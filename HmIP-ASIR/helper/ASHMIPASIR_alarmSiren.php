@@ -379,6 +379,7 @@ trait ASHMIPASIR_alarmSiren
                 $id = $this->ReadPropertyInteger('VirtualRemoteControlPreAlarm');
                 if ($id != 0 && @IPS_ObjectExists($id)) {
                     $virtualRemoteControl = true;
+                    IPS_Sleep($this->ReadPropertyInteger('VirtualRemoteControlSwitchingDelay'));
                     $result = @RequestAction($id, true);
                 }
                 break;
@@ -387,6 +388,7 @@ trait ASHMIPASIR_alarmSiren
                 $id = $this->ReadPropertyInteger('VirtualRemoteControlMainAlarm');
                 if ($id != 0 && @IPS_ObjectExists($id)) {
                     $virtualRemoteControl = true;
+                    IPS_Sleep($this->ReadPropertyInteger('VirtualRemoteControlSwitchingDelay'));
                     $result = @RequestAction($id, true);
                 }
                 break;
@@ -395,6 +397,7 @@ trait ASHMIPASIR_alarmSiren
                 $id = $this->ReadPropertyInteger('VirtualRemoteControlPostAlarm');
                 if ($id != 0 && @IPS_ObjectExists($id)) {
                     $virtualRemoteControl = true;
+                    IPS_Sleep($this->ReadPropertyInteger('VirtualRemoteControlSwitchingDelay'));
                     $result = @RequestAction($id, true);
                 }
                 break;
@@ -403,6 +406,7 @@ trait ASHMIPASIR_alarmSiren
                 $id = $this->ReadPropertyInteger('VirtualRemoteControlAlarmSirenOff');
                 if ($id != 0 && @IPS_ObjectExists($id)) {
                     $virtualRemoteControl = true;
+                    IPS_Sleep($this->ReadPropertyInteger('VirtualRemoteControlSwitchingDelay'));
                     $result = @RequestAction($id, true);
                 }
         }

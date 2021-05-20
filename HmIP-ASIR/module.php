@@ -399,7 +399,7 @@ class AlarmsireneHmIPASIR extends IPSModule
             'name'    => 'VirtualRemoteControlSwitchingDelay',
             'caption' => 'Schaltverzögerung',
             'minimum' => 0,
-            'suffix'  => 'Sekunden'
+            'suffix'  => 'Millisekunden'
         ];
         // Trigger variables
         $variables = json_decode($this->ReadPropertyString('TriggerVariables'));
