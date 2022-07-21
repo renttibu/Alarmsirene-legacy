@@ -15,6 +15,7 @@ trait ASHMIPASIR_alarmSiren
 {
     public function ResetSignallingAmount(): void
     {
+        $this->SetTimerInterval('ResetSignallingAmount', (strtotime('next day midnight') - time()) * 1000);
         $this->SetValue('SignallingAmount', 0);
         $this->SendDebug(__FUNCTION__, 'Die Anzahl der Auslösungen wurde zurückgesetzt.', 0);
     }
