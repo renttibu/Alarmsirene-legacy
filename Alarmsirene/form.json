@@ -1,422 +1,420 @@
 {
-  "elements": [
-    {
-      "type": "ExpansionPanel",
-      "caption": "Funktionen",
-      "items": [
+    "elements": [
         {
-          "type": "CheckBox",
-          "name": "MaintenanceMode",
-          "caption": "Wartungsmodus"
+            "type": "ExpansionPanel",
+            "caption": "Funktionen",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "MaintenanceMode",
+                    "caption": "Wartungsmodus"
+                },
+                {
+                    "type": "Label",
+                    "caption": " "
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "EnableAlarmSiren",
+                    "caption": "Alarmsirene"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "EnableStatus",
+                    "caption": "Status"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "EnableSignallingAmount",
+                    "caption": "Auslösungen"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "EnableResetSignallingAmount",
+                    "caption": "Rückstellung"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "EnableMuteMode",
+                    "caption": "Stummschaltung"
+                }
+            ]
         },
         {
-          "type": "Label",
-          "caption": " "
+            "type": "ExpansionPanel",
+            "caption": "Alarmsirene",
+            "items": []
         },
         {
-          "type": "CheckBox",
-          "name": "EnableAlarmSiren",
-          "caption": "Alarmsirene"
+            "type": "ExpansionPanel",
+            "caption": "Voralarm",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "UsePreAlarm",
+                    "caption": "Voralarm"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "PreAlarmDuration",
+                    "caption": "Dauer",
+                    "minimum": 1,
+                    "maximum": 60,
+                    "suffix": "Sekunden"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "UsePreAlarmAcousticSignal",
+                    "caption": "Akustisches Signal"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "UsePreAlarmOpticalSignal",
+                    "caption": "Optisches Signal"
+                }
+            ]
         },
         {
-          "type": "CheckBox",
-          "name": "EnableStatus",
-          "caption": "Status"
+            "type": "ExpansionPanel",
+            "caption": "Hauptalarm",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "UseMainAlarm",
+                    "caption": "Hauptalarm"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "MainAlarmSignallingDelay",
+                    "caption": "Einschaltverzögerung",
+                    "minimum": 0,
+                    "suffix": "Sekunden"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "MainAlarmDuration",
+                    "caption": "Dauer",
+                    "minimum": 0,
+                    "maximum": 180,
+                    "suffix": "Sekunden"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "MainAlarmMaximumSignallingAmount",
+                    "caption": "Maximale Auslösungen",
+                    "minimum": 0,
+                    "suffix": "Anzahl"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "UseMainAlarmAcousticSignal",
+                    "caption": "Akustisches Signal"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "UseMainAlarmOpticalSignal",
+                    "caption": "Optisches Signal"
+                }
+            ]
         },
         {
-          "type": "CheckBox",
-          "name": "EnableSignallingAmount",
-          "caption": "Auslösungen"
+            "type": "ExpansionPanel",
+            "caption": "Nachalarm",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "UsePostAlarm",
+                    "caption": "Nachalarm"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "PostAlarmDuration",
+                    "caption": "Dauer",
+                    "minimum": 0,
+                    "suffix": "Minuten"
+                },
+                {
+                    "type": "CheckBox",
+                    "name": "UsePostAlarmOpticalSignal",
+                    "caption": "Optisches Signal"
+                }
+            ]
         },
         {
-          "type": "CheckBox",
-          "name": "EnableResetSignallingAmount",
-          "caption": "Rückstellung"
+            "type": "ExpansionPanel",
+            "caption": "Auslöser",
+            "items": [
+                {
+                    "type": "List",
+                    "name": "TriggerVariables",
+                    "caption": "Auslösende Variablen",
+                    "rowCount": 5,
+                    "add": true,
+                    "delete": true,
+                    "sort": {
+                        "column": "ID",
+                        "direction": "ascending"
+                    },
+                    "columns": [
+                        {
+                            "caption": "Aktiviert",
+                            "name": "Use",
+                            "width": "100px",
+                            "add": true,
+                            "edit": {
+                                "type": "CheckBox"
+                            }
+                        },
+                        {
+                            "caption": "Auslösende Variable",
+                            "name": "ID",
+                            "width": "auto",
+                            "add": 0,
+                            "onClick": "AS_EnableTriggerVariableConfigurationButton($id, $TriggerVariables['ID']);",
+                            "edit": {
+                                "type": "SelectVariable"
+                            }
+                        },
+                        {
+                            "caption": "Info",
+                            "name": "Info",
+                            "width": "160px",
+                            "add": "",
+                            "visible": false,
+                            "edit": {
+                                "type": "Button",
+                                "onClick": "AS_ShowVariableDetails($id, $ID);"
+                            }
+                        },
+                        {
+                            "caption": "Auslöseart",
+                            "name": "TriggerType",
+                            "width": "280px",
+                            "add": 6,
+                            "edit": {
+                                "type": "Select",
+                                "options": [
+                                    {
+                                        "caption": "Bei Änderung",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "Bei Aktualisierung",
+                                        "value": 1
+                                    },
+                                    {
+                                        "caption": "Bei Grenzunterschreitung (einmalig)",
+                                        "value": 2
+                                    },
+                                    {
+                                        "caption": "Bei Grenzunterschreitung (mehrmalig)",
+                                        "value": 3
+                                    },
+                                    {
+                                        "caption": "Bei Grenzüberschreitung (einmalig)",
+                                        "value": 4
+                                    },
+                                    {
+                                        "caption": "Bei Grenzüberschreitung (mehrmalig)",
+                                        "value": 5
+                                    },
+                                    {
+                                        "caption": "Bei bestimmtem Wert (einmalig)",
+                                        "value": 6
+                                    },
+                                    {
+                                        "caption": "Bei bestimmtem Wert (mehrmalig)",
+                                        "value": 7
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "caption": "Auslösewert",
+                            "name": "TriggerValue",
+                            "width": "160px",
+                            "add": "",
+                            "edit": {
+                                "type": "ValidationTextBox"
+                            }
+                        },
+                        {
+                            "caption": "Auslöseaktion",
+                            "name": "TriggerAction",
+                            "width": "200px",
+                            "add": 0,
+                            "edit": {
+                                "type": "Select",
+                                "options": [
+                                    {
+                                        "caption": "Alarmsirene ausschalten",
+                                        "value": 0
+                                    },
+                                    {
+                                        "caption": "Alarmsirene einschalten",
+                                        "value": 1
+                                    },
+                                    {
+                                        "caption": "Panikalarm",
+                                        "value": 2
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "OpenObjectButton",
+                    "caption": "Bearbeiten",
+                    "name": "TriggerVariableConfigurationButton",
+                    "enabled": false,
+                    "visible": false,
+                    "objectID": 0
+                }
+            ]
         },
         {
-          "type": "CheckBox",
-          "name": "EnableMuteMode",
-          "caption": "Stummschaltung"
+            "type": "ExpansionPanel",
+            "caption": "Alarmprotokoll",
+            "items": []
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Stummschaltung",
+            "items": [
+                {
+                    "type": "CheckBox",
+                    "name": "UseAutomaticMuteMode",
+                    "caption": "Automatische Stummschaltung"
+                },
+                {
+                    "type": "SelectTime",
+                    "name": "MuteModeStartTime",
+                    "caption": "Startzeit"
+                },
+                {
+                    "type": "SelectTime",
+                    "name": "MuteModeEndTime",
+                    "caption": "Endzeit"
+                }
+            ]
         }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Alarmsirene",
-      "items": [
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Voralarm",
-      "items": [
+    ],
+    "actions": [
         {
-          "type": "CheckBox",
-          "name": "UsePreAlarm",
-          "caption": "Voralarm"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "PreAlarmDuration",
-          "caption": "Dauer",
-          "minimum": 1,
-          "maximum": 60,
-          "suffix": "Sekunden"
-        },
-        {
-          "type": "CheckBox",
-          "name": "UsePreAlarmAcousticSignal",
-          "caption": "Akustisches Signal"
-        },
-        {
-          "type": "CheckBox",
-          "name": "UsePreAlarmOpticalSignal",
-          "caption": "Optisches Signal"
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Hauptalarm",
-      "items": [
-        {
-          "type": "CheckBox",
-          "name": "UseMainAlarm",
-          "caption": "Hauptalarm"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmSignallingDelay",
-          "caption": "Einschaltverzögerung",
-          "minimum": 0,
-          "suffix": "Sekunden"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmDuration",
-          "caption": "Dauer",
-          "minimum": 0,
-          "maximum": 180,
-          "suffix": "Sekunden"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "MainAlarmMaximumSignallingAmount",
-          "caption": "Maximale Auslösungen",
-          "minimum": 0,
-          "suffix": "Anzahl"
-        },
-        {
-          "type": "CheckBox",
-          "name": "UseMainAlarmAcousticSignal",
-          "caption": "Akustisches Signal"
-        },
-        {
-          "type": "CheckBox",
-          "name": "UseMainAlarmOpticalSignal",
-          "caption": "Optisches Signal"
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Nachalarm",
-      "items": [
-        {
-          "type": "CheckBox",
-          "name": "UsePostAlarm",
-          "caption": "Nachalarm"
-        },
-        {
-          "type": "NumberSpinner",
-          "name": "PostAlarmDuration",
-          "caption": "Dauer",
-          "minimum": 0,
-          "suffix": "Minuten"
-        },
-        {
-          "type": "CheckBox",
-          "name": "UsePostAlarmOpticalSignal",
-          "caption": "Optisches Signal"
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Auslöser",
-      "items": [
-        {
-          "type": "List",
-          "name": "TriggerVariables",
-          "caption": "Auslösende Variablen",
-          "rowCount": 5,
-          "add": true,
-          "delete": true,
-          "sort": {
-            "column": "ID",
-            "direction": "ascending"
-          },
-          "columns": [
-            {
-              "caption": "Aktiviert",
-              "name": "Use",
-              "width": "100px",
-              "add": true,
-              "edit": {
-                "type": "CheckBox"
-              }
-            },
-            {
-              "caption": "Auslösende Variable",
-              "name": "ID",
-              "width": "auto",
-              "add": 0,
-              "onClick": "AS_EnableTriggerVariableConfigurationButton($id, $TriggerVariables['ID']);",
-              "edit": {
-                "type": "SelectVariable"
-              }
-            },
-            {
-              "caption": "Info",
-              "name": "Info",
-              "width": "160px",
-              "add": "",
-              "visible": false,
-              "edit": {
-                "type": "Button",
-                "onClick": "AS_ShowVariableDetails($id, $ID);"
-              }
-            },
-            {
-              "caption": "Auslöseart",
-              "name": "TriggerType",
-              "width": "280px",
-              "add": 6,
-              "edit": {
-                "type": "Select",
-                "options": [
-                  {
-                    "caption": "Bei Änderung",
-                    "value": 0
-                  },
-                  {
-                    "caption": "Bei Aktualisierung",
-                    "value": 1
-                  },
-                  {
-                    "caption": "Bei Grenzunterschreitung (einmalig)",
-                    "value": 2
-                  },
-                  {
-                    "caption": "Bei Grenzunterschreitung (mehrmalig)",
-                    "value": 3
-                  },
-                  {
-                    "caption": "Bei Grenzüberschreitung (einmalig)",
-                    "value": 4
-                  },
-                  {
-                    "caption": "Bei Grenzüberschreitung (mehrmalig)",
-                    "value": 5
-                  },
-                  {
-                    "caption": "Bei bestimmtem Wert (einmalig)",
-                    "value": 6
-                  },
-                  {
-                    "caption": "Bei bestimmtem Wert (mehrmalig)",
-                    "value": 7
-                  }
-                ]
-              }
-            },
-            {
-              "caption": "Auslösewert",
-              "name": "TriggerValue",
-              "width": "160px",
-              "add": "",
-              "edit": {
-                "type": "ValidationTextBox"
-              }
-            },
-            {
-              "caption": "Auslöseaktion",
-              "name": "TriggerAction",
-              "width": "200px",
-              "add": 0,
-              "edit": {
-                "type": "Select",
-                "options": [
-                  {
-                    "caption": "Alarmsirene ausschalten",
-                    "value": 0
-                  },
-                  {
-                    "caption": "Alarmsirene einschalten",
-                    "value": 1
-                  },
-                  {
-                    "caption": "Panikalarm",
-                    "value": 2
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "type": "OpenObjectButton",
-          "caption": "Bearbeiten",
-          "name": "TriggerVariableConfigurationButton",
-          "enabled": false,
-          "visible": false,
-          "objectID": 0
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Alarmprotokoll",
-      "items": [
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Stummschaltung",
-      "items": [
-        {
-          "type": "CheckBox",
-          "name": "UseAutomaticMuteMode",
-          "caption": "Automatische Stummschaltung"
-        },
-        {
-          "type": "SelectTime",
-          "name": "MuteModeStartTime",
-          "caption": "Startzeit"
-        },
-        {
-          "type": "SelectTime",
-          "name": "MuteModeEndTime",
-          "caption": "Endzeit"
-        }
-      ]
-    }
-  ],
-  "actions": [
-    {
-      "type": "ExpansionPanel",
-      "caption": "Konfiguration",
-      "items": [
-        {
-          "type": "Button",
-          "caption": "Neu einlesen",
-          "onClick": "AS_ReloadConfiguration($id);"
-        },
-        {
-          "type": "RowLayout",
-          "items": [
-            {
-              "type": "SelectCategory",
-              "name": "BackupCategory",
-              "caption": "Kategorie",
-              "width": "600px"
-            },
-            {
-              "type": "Label",
-              "caption": " "
-            },
-            {
-              "type": "Button",
-              "caption": "Sichern",
-              "onClick": "AS_CreateBackup($id, $BackupCategory);"
-            }
-          ]
-        },
-        {
-          "type": "RowLayout",
-          "items": [
-            {
-              "type": "SelectScript",
-              "name": "ConfigurationScript",
-              "caption": "Konfiguration",
-              "width": "600px"
-            },
-            {
-              "type": "Label",
-              "caption": " "
-            },
-            {
-              "type": "PopupButton",
-              "caption": "Wiederherstellen",
-              "popup": {
-                "caption": "Konfiguration wirklich wiederherstellen?",
-                "items": [
-                  {
+            "type": "ExpansionPanel",
+            "caption": "Konfiguration",
+            "items": [
+                {
                     "type": "Button",
-                    "caption": "Wiederherstellen",
-                    "onClick": "AS_RestoreConfiguration($id, $ConfigurationScript);"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Registrierte Nachrichten",
-      "items": [
-        {
-          "type": "List",
-          "name": "RegisteredMessages",
-          "rowCount": 11,
-          "sort": {
-            "column": "SenderID",
-            "direction": "ascending"
-          },
-          "columns": [
-            {
-              "caption": "Sender ID",
-              "name": "SenderID",
-              "width": "150px"
-            },
-            {
-              "caption": "Sender Name",
-              "name": "SenderName",
-              "width": "auto"
-            },
-            {
-              "caption": "Nachrichten ID",
-              "name": "MessageID",
-              "width": "150px"
-            },
-            {
-              "caption": "Nachrichten Bezeichnung",
-              "name": "MessageDescription",
-              "width": "250px"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "ExpansionPanel",
-      "caption": "Schaltfunktionen",
-      "items": [
-        {
-          "type": "TestCenter"
+                    "caption": "Neu einlesen",
+                    "onClick": "AS_ReloadConfiguration($id);"
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "SelectCategory",
+                            "name": "BackupCategory",
+                            "caption": "Kategorie",
+                            "width": "600px"
+                        },
+                        {
+                            "type": "Label",
+                            "caption": " "
+                        },
+                        {
+                            "type": "Button",
+                            "caption": "Sichern",
+                            "onClick": "AS_CreateBackup($id, $BackupCategory);"
+                        }
+                    ]
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "SelectScript",
+                            "name": "ConfigurationScript",
+                            "caption": "Konfiguration",
+                            "width": "600px"
+                        },
+                        {
+                            "type": "Label",
+                            "caption": " "
+                        },
+                        {
+                            "type": "PopupButton",
+                            "caption": "Wiederherstellen",
+                            "popup": {
+                                "caption": "Konfiguration wirklich wiederherstellen?",
+                                "items": [
+                                    {
+                                        "type": "Button",
+                                        "caption": "Wiederherstellen",
+                                        "onClick": "AS_RestoreConfiguration($id, $ConfigurationScript);"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "Label",
-          "caption": " "
+            "type": "ExpansionPanel",
+            "caption": "Registrierte Nachrichten",
+            "items": [
+                {
+                    "type": "List",
+                    "name": "RegisteredMessages",
+                    "rowCount": 11,
+                    "sort": {
+                        "column": "SenderID",
+                        "direction": "ascending"
+                    },
+                    "columns": [
+                        {
+                            "caption": "Sender ID",
+                            "name": "SenderID",
+                            "width": "150px"
+                        },
+                        {
+                            "caption": "Sender Name",
+                            "name": "SenderName",
+                            "width": "auto"
+                        },
+                        {
+                            "caption": "Nachrichten ID",
+                            "name": "MessageID",
+                            "width": "150px"
+                        },
+                        {
+                            "caption": "Nachrichten Bezeichnung",
+                            "name": "MessageDescription",
+                            "width": "250px"
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "Button",
-          "caption": "Panikalarm auslösen",
-          "onClick": "AS_ExecuteMainAlarm($id, true);"
+            "type": "ExpansionPanel",
+            "caption": "Schaltfunktionen",
+            "items": [
+                {
+                    "type": "TestCenter"
+                },
+                {
+                    "type": "Label",
+                    "caption": " "
+                },
+                {
+                    "type": "Button",
+                    "caption": "Panikalarm auslösen",
+                    "onClick": "AS_ExecuteMainAlarm($id, true);"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
